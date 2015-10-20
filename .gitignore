@@ -1,0 +1,9 @@
+*.pyc
+*.log
+*.[1-9]
+*.*~
+tags
+static/*
+media/*
+secret_key.py
+db.sqlite3

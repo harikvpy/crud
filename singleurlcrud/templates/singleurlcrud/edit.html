@@ -1,0 +1,116 @@
+{% extends base_template %}
+{% load i18n staticfiles bootstrap3 crud_tags %}
+{% block extrastyle %}
+{{ media }}
+{% if formset %}
+<script type="text/javascript" charset="utf-8">
+var itemCount = 0;
+var item_form_templ;
+var prefix = "{{formset.prefix}}";
+var item_control_id_prefix = "id_"+prefix+"-";
+/* adds a new formset item row at the end of the current item rows */
+function addNewItemForm() {
+    // append an empty form the end of the form table
+    var nForms = parseInt($("#"+item_control_id_prefix+"TOTAL_FORMS").val());
+    var empty_item_form = item_form_templ;
+    var re = new RegExp(prefix+"-X", "g");
+    empty_item_form = empty_item_form.replace(re, prefix+"-"+nForms);
+    $("#id_items_table tbody:last-child").append(empty_item_form);
+    $("#id_items_table tbody tr:last :input").not(":button :reset :hidden :checkbox :radio").val('');
+    $("#"+item_control_id_prefix+"TOTAL_FORMS").val(nForms+1);
+}
+$(document).ready(function() {
+    // change row color to red when the item delete checkbox is checked
+    $("div[id='delete-check'] input[type='checkbox']").change(function(element) {
+        if ($(element.target).prop("checked")) {
+            $(element.target).closest("tr").addClass("deleted");
+        } else {
+            $(element.target).closest("tr").removeClass("deleted");
+        }
+    });
+    // create the form row template and save it to a global variable that we 
+    // can use to add new forms
+    item_form_templ = $("#id_items_table tbody").children(":last").html();
+    var iLastRowIndex = parseInt($("#"+item_control_id_prefix+"TOTAL_FORMS").val())-1;
+    var re = new RegExp(prefix+"-"+iLastRowIndex, "g");
+    item_form_templ = "<tr>"+item_form_templ.replace(re, prefix+"-X")+"</tr>";
+});
+</script>
+<style type="text/css" media="screen">
+.headercontrols {
+    margin-top: -6px;
+} .deleted {
+    background: #ef4747;
+}
+</style>
+{% endif %}
+{% endblock %}
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'dashboard:home' %}">{% trans 'Home' %}</a></li>
+    {% block breadcrumbslist %}
+        {% for name, link in breadcrumbs %}
+        <li>{% if link %}<a href="{{ link }}">{% endif %}{{ name }}{% if link %}</a>{% endif %}</li>
+        {% endfor %}
+    {% endblock %}
+</ol>
+{% endblock breadcrumbs %}
+{% block content %}
+<form id="formEdit" role="form" action="" method="post">
+    {% csrf_token %}
+    {% if popup %}
+    <script type="text/javascript" charset="utf-8">
+        _popup = true;
+    </script>
+    <input type='hidden' name='_popup' value='1'/>
+    {% endif %}
+    {% if form_haserrors %}
+        <input id="id_form_haserrors" type="hidden" value="1">
+    {% endif %}
+    {% bootstrap_form form %}
+    {% if formset %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="pull-right headercontrols">
+                <div class="form-inline">
+                    <a href="javascript:void(0);" onclick="addNewItemForm()" class="btn btn-default btn-sm" title="{% trans 'Add' %}"><span class="glyphicon glyphicon-plus"></span></a>
+                </div>
+            </div>
+            <h4 class="panel-title">{{ formset.model|verbose_name_plural }}</h4>
+        </div>
+        {{ formset.management_form.as_p }}
+        <table class="table table-condensed" id="id_items_table">
+            <thead>
+                {% for field in formset.forms.0 %}
+                    {% if not field.is_hidden %}
+                        <th>{{ field.label }}</th>
+                    {% endif %}
+                {% endfor %}
+            </thead>
+            <tbody>
+                {% for f in formset.forms %}
+                <tr>
+                    {% for field in f %}
+                        {% if not field.is_hidden and not field.name = 'DELETE' %}
+                            <td>{% bootstrap_field field show_label=False %}</td>
+                        {% endif %}
+                        {% if field.name == 'DELETE' %}
+                        <td><div class="form-group" id="delete-check">{{ f.DELETE }}</div></td> 
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                    {% if not forloop.last %}
+                    {{ f.id }}
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    <div class="form-group">
+        <button id="itemSubmit" type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+        <button id="idCancelEdit" type="button" class="btn btn-default" onclick="cancelEdit();">{% trans "Cancel" %}</button>
+    </div>
+</form>
+{% endblock content %}
+

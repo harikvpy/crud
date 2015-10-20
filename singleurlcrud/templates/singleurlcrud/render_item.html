@@ -1,0 +1,20 @@
+{% load i18n crud_tags %}
+<tr>
+    {% for field in view.list_display %}
+        <td>{% if actions|length %}{% if forloop.first %}<input class="item-selection-checkbox" type="checkbox" id="id_select_{{ rowindex }}" data-pk="{{ object.pk }}"></input>&nbsp;&nbsp;{% endif %}{% endif %}{% eval_field view field object %}</td>
+    {% endfor %}
+    <td>
+        {% for action in itemactions %}
+        <a href="{%if action.url%}{{action.url}}?object={{object.pk}}{%else%}javascript:void(0);{%endif%}" title="{{action.title}}" {%if not action.url%}onclick="invokeCustomItemAction('{{action.key}}', {{object.pk}});"{%endif%}><span class="{{action.css}}"></span></a>
+        {% endfor %}
+        {% if can_delete %}
+        <a href="javascript:void(0);" title="{% trans 'Delete' %}" onclick="deleteItem({{object.pk}}, '{{ object }}');"><span class="glyphicon glyphicon-trash"></span></a>
+        {% else %}
+        <span class="glyphicon glyphicon-ban-circle"></span>
+        {% endif %}
+        {% if can_edit %}
+        <a href="javascript:void(0);" title="{% trans 'Edit' %}" onclick="editItemThunk({{object.pk}});"><span class="glyphicon glyphicon-pencil"></span></a>
+        {% endif %}
+    </td>
+</tr>
+

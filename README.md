@@ -6,6 +6,9 @@ Django comes with an excellent admin framework that provides a sophisticated int
 
 This project is aimed at addressing the above shortcomings by developing a pure django view that provides basic table CRUD operations. You derive from this view providing it with the appropriate initialization parameters and then hook it up to the url namespace yourself explicitly.
 
+# Dependencies
+  django-bootstrap3
+
 # Quickstart
 TBD
 

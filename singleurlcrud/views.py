@@ -34,6 +34,10 @@ practice at least for the foreseeable future.
                 for item add/edit/delete operations. These are provided as
                 overridable methods, which if omitted will default to the
                 built in mechanisms.
+
+    2015/12/11  Added support for django admin like related object add through
+                a popup window. Capability only works for ForeignKey field.
+                ManyToManyField field implementation is pending.
 """
 
 from django.db import models
@@ -52,6 +56,8 @@ from django.utils.encoding import force_str, force_text, smart_text
 from django.contrib.admin.util import display_for_field, display_for_value
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, ImproperlyConfigured
 
+from singleurlcrud.widgets import CustomRelatedFieldWidgetWrapper
+
 class CRUDView(ListView):
     """
     Base view class for a single page CRUD interface.
@@ -61,13 +67,18 @@ class CRUDView(ListView):
     """
     paginate_by = 10
     template_name = "singleurlcrud/list.html"
-    js = [ 'singleurlcrud/js/crud-controller.js', ]
+    js = [ 'singleurlcrud/js/crud-controller.js',
+            'admin/js/admin/RelatedObjectLookups.js' ]
     version = 1
     form_class = None
     can_create = True
     can_edit = True
     can_delete = True
     context_object_name = 'object_list'
+
+    # set this to a dictionary where each item is the CRUD url of
+    # the related field, indexed by the field's name
+    related_field_crud_urls = {}
 
     class ItemAction(object):
         title = ''
@@ -97,11 +108,33 @@ class CRUDView(ListView):
         from django.forms.models import modelform_factory
         return modelform_factory(self.get_model(), fields=self.get_form_fields())
 
+    def get_related_field_crud_urls(self):
+        """
+        Return the related field CRUD urls for inline related field add/edit
+        popups.
+        """
+        return {}
+
     def get_form(self, form_class, **kwargs):
         """
         Returns the form instance contructed from the supplied form_class.
         """
-        return form_class(**kwargs)
+        form = form_class(**kwargs)
+        # Iterate through all the form's fields and if any of the fields
+        # is an instance of ForeignKey and the user has requested the
+        # related model to be editable inline, replace its widget with our
+        # CustomRelatedFieldWidgetWrapper that allows this.
+        for field in self.model._meta.fields:
+            if isinstance(field, models.ForeignKey) and \
+                    field.name in self.related_field_crud_urls:
+                # replace the form field's widget with CRFWW
+                form_field_ = form.fields[field.name]
+                from django.forms import Select
+                form_field_.widget = CustomRelatedFieldWidgetWrapper(
+                        Select(choices=form_field_.choices),
+                        self.related_field_crud_urls[field.name],
+                        True)
+        return form
 
     def get_form_fields(self):
         """
@@ -433,7 +466,7 @@ class CRUDView(ListView):
             if form.is_valid():
                 item = self.save_form(request, form, False, True)
                 if "_popup" in request.POST:
-                    return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % \
+                    return HttpResponse('<script type="text/javascript">opener.dismissAddRelatedObjectPopup(window, "%s", "%s");</script>' % \
                             (escape(item.pk), escapejs(item)))
                 return HttpResponseRedirect(self.get_opless_path())
         except ValidationError as ve:

@@ -147,25 +147,6 @@ class CRUDView(ListView):
             return self.form_fields
         return self.list_display
 
-    def get_fields(self):
-        """
-        Returns the fields and their titles for all fields to be
-        displayed in the listview.
-
-        Each field and its title are packed as 2-tuple and all
-        such tuples are stored in a list which is returned. So
-        the returned value looks like:
-
-        [(field_name, field_title), (field_name, field_title), ...]
-        """
-        form_fields = self.get_form_fields()
-
-        fields = []
-        for field in self.get_model()._meta.fields:
-            if field.name in form_fields:
-                fields.append((field.name, field.verbose_name.title(),))
-        return fields
-
     def get_add_item_custom_url(self):
         return ''
 
@@ -198,6 +179,9 @@ class CRUDView(ListView):
         """
         Returns the label for a list_display field which can be used
         in column headings.
+
+        'field_label' template tag uses this method to get label for each
+        column specified in list_display.
         """
         assert(name in self.list_display)
         return self.label_for_field(name)
@@ -260,50 +244,6 @@ class CRUDView(ListView):
                 raise AttributeError(message)
         return label
 
-    def get_results(self):
-        """
-        Returns the item list as an array of arrays. Each element of the inner array
-        is the respective field value of the fields specified in list_display.
-
-        The last element of the inner array is the id of the object.
-        """
-        results = []
-        model = self.get_model()
-        objects = self.object_list
-        page_size = self.get_paginate_by(objects)
-        if page_size:
-            paginator, page, objects, is_paginated = self.paginate_queryset(objects, page_size)
-        for obj in objects:
-            row_result = []
-            for name in self.list_display:
-                value = ""
-                try:
-                    field = obj._meta.get_field(name)
-                    try:
-                        if len(field.get_choices()) > 0 and hasattr(obj, 'get_'+name+'_display'):
-                            value = getattr(obj, 'get_'+name+'_display')()
-                        else:
-                            value = getattr(obj, name)
-                    except AttributeError:
-                        value = getattr(obj, name)
-                except models.FieldDoesNotExist:
-                    from django.utils.safestring import mark_safe
-                    if hasattr(self.get_model(), name):
-                        value = getattr(self.get_model(), name)(obj)
-                    elif hasattr(self, name):
-                        value = getattr(self, name)(obj)
-                    else:
-                        raise models.FieldDoesNotExist("Could not evaluate column '"+name+"'")
-                    if type(value) != type(True):
-                        value = mark_safe(value)
-                row_result.append(display_for_value(value, type(value)==type(True)))
-            # append the object's PK field
-            can_delete = True
-            row_result.append([obj.pk, getattr(obj, 'can_delete', True), getattr(obj, 'can_edit', True)])
-            # append the entire row to the outer array
-            results.append(row_result)
-        return results
-
     def get_actions_as_str(self):
         """
         Returns the actions tuples, with the handler part of the
@@ -334,8 +274,7 @@ class CRUDView(ListView):
 
     def get_context_data(self, **kwargs):
         """
-        Provide additional context data for the template to render the
-        CRUD view correctly.
+        Context data for the template to render the CRUD view.
         """
         context = {
             'view': self,
@@ -377,6 +316,7 @@ class CRUDView(ListView):
         return context
 
     def get_add_context_data(self, **kwargs):
+        '''Return context data for add opereation'''
         context = kwargs
         context['add'] = True
         context['pagetitle'] = _("Create new %s") % (self.get_model()._meta.verbose_name.title())
@@ -385,6 +325,7 @@ class CRUDView(ListView):
         return context
 
     def get_edit_context_data(self, **kwargs):
+        '''Return context data for edit opereation'''
         context = kwargs
         _object = self.get_model().objects.get(pk=self.request.GET.get('item'))
         object_title = _object._meta.verbose_name.title()
@@ -397,6 +338,7 @@ class CRUDView(ListView):
         return context
 
     def get_delete_context_data(self, **kwargs):
+        '''Return context data for delete operation'''
         context = kwargs
         _object = self.get_model().objects.get(pk=self.request.GET.get('item'))
         object_title = _object._meta.verbose_name.title()

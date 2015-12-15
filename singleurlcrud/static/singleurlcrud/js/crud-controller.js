@@ -80,6 +80,26 @@ function inEditMode () {
 var item_to_delete = null; /* global stores the item to delete */
 var delete_msg = ''; /* the message to be shown in delete confirmation panel */
 var cSelectedItems = 0;
+/* It's important that we have a django object in global namespace.
+ * Functions in RelatedObjectLookup.js file from contrib.admin that 
+ * we'll be including for the popup edit/add feature refer to 
+ * jQuery from this object. This namespace will be created if 
+ * admin:js18n url is included in the base template and if that 
+ * url is accessible without user login. If the django object
+ * is not present, we create an empty django object and assign
+ * its jQuery property to the global jQuery object.
+ *
+ * Of course the contrib.admin django namespace has lot more
+ * methods (specifically localized datetime formats and string
+ * i18n methods), but for our CRUD, we don't need them.
+ */
+    if (typeof(django) == "undefined") {
+        django = {};
+    }
+    if (typeof(django.jQuery) == "undefined" &&
+            typeof(window.jQuery) == "function") {
+        django.jQuery = window.jQuery;
+    }
 /* 
    Function to test the state whereby a previous add operation 
    resulted in an error. We can test this by checking for the the

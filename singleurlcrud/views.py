@@ -239,12 +239,7 @@ class CRUDView(ListView):
         label = ""
         try:
             field = model._meta.get_field_by_name(name)[0]
-            if isinstance(field, RelatedField):
-                model = field.model
-                meta = model._meta
-                label = meta.verbose_name.capitalize()
-            else:
-                label = field.verbose_name.capitalize()
+            label = field.verbose_name.capitalize()
         except models.FieldDoesNotExist:
             if hasattr(self.get_model(), name):
                 method = getattr(self.get_model(), name)

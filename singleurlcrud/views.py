@@ -53,7 +53,10 @@ from django.db.models.fields.related import RelatedField
 from django.utils import six
 from django.utils.html import escape, escapejs
 from django.utils.encoding import force_str, force_text, smart_text
-from django.contrib.admin.util import display_for_field, display_for_value
+try:
+    from django.contrib.admin.util import display_for_field, display_for_value
+except ImportError:
+    from django.contrib.admin.utils import display_for_field, display_for_value
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, ImproperlyConfigured
 
 from singleurlcrud.widgets import CustomRelatedFieldWidgetWrapper
@@ -237,7 +240,7 @@ class CRUDView(ListView):
         try:
             field = model._meta.get_field_by_name(name)[0]
             if isinstance(field, RelatedField):
-                model = field.related_field.model
+                model = field.model
                 meta = model._meta
                 label = meta.verbose_name.capitalize()
             else:
@@ -361,6 +364,8 @@ class CRUDView(ListView):
         }
 
         if self.get_op() in context_handler:
+            if '_popup' in self.request.GET:
+                context['popup'] = self.request.GET['_popup']
             context.update(context_handler[self.get_op()](**kwargs))
             return context
 
@@ -390,8 +395,6 @@ class CRUDView(ListView):
         context['pagetitle'] = _("Create new %s") % (self.get_model()._meta.verbose_name.title())
         if 'form' not in context:
             context['form'] = self.get_form(self.get_form_class())
-        if '_popup' in self.request.GET:
-            context['popup'] = self.request.GET['_popup']
         return context
 
     def get_edit_context_data(self, **kwargs):
@@ -487,6 +490,9 @@ class CRUDView(ListView):
                         files=request.FILES)
             if form.is_valid():
                 item = self.save_form(request, form, True, True)
+                if "_popup" in request.POST:
+                    return HttpResponse('<script type="text/javascript">opener.dismissAddRelatedObjectPopup(window, "%s", "%s");</script>' % \
+                            (escape(item.pk), escapejs(item)))
                 msg = _('%s details updated') % self.get_model()._meta.verbose_name.title()
                 messages.info(self.request, msg)
                 self.object_list = self.get_queryset()

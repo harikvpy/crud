@@ -136,6 +136,31 @@ function doPostLoad() {
             $("#id_select_all").prop("checked", false);
         }
     });
+    // bind on change handler with related-object lookup select boxes
+    $("[data-crfww]").change(function() {
+        updateChangeRelatedLink($(this));
+    });
+    $(".change-existing").click(function() {
+        event.preventDefault();
+        if ($(this).attr('href'))
+            return showRelatedObjectPopup(this);
+    });
+    $("[data-crfww]").each(function(index, element) {
+        updateChangeRelatedLink($(element));
+    });
+}
+function updateChangeRelatedLink(sel) {
+    var selected = sel.val();
+    var anchor = sel.parent().find(".change-existing");
+    if (selected) {
+        var templ = anchor.data().hreftempl;
+        anchor.attr("href", templ.replace("__fk__", selected));
+        anchor.removeClass("change-existing-disabled");
+    } else {
+        sel.parent().find(".change-existing").removeAttr("href");
+        anchor.removeAttr("href");
+        anchor.addClass("change-existing-disabled");
+    }
 }
 function selectAll() {
     for (var i=0; i<totalItems; i++) {

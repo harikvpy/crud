@@ -5,13 +5,8 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="{% url 'admin:jsi18n' %}" type="text/javascript" charset="utf-8"></script>
 {% bootstrap_css %}
-<script src="{% bootstrap_jquery_url %}">
-</script>
-<script type="text/javascript" charset="utf-8">
-    django.jQuery = $;
-</script>
+<script src="{% bootstrap_jquery_url %}" type="text/javascript" charset="utf-8"></script>
 {% block extrastyle %}
 {% endblock extrastyle %}
 <title>SimpleCRUD Demo</title>

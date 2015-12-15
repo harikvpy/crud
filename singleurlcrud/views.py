@@ -241,6 +241,11 @@ class CRUDView(ListView):
             field = model._meta.get_field_by_name(name)[0]
             label = field.verbose_name.capitalize()
         except models.FieldDoesNotExist:
+            '''
+            Not a db field. Treat as one of:
+                1. model object's attribute
+                2. view subclass's attribute
+            '''
             if hasattr(self.get_model(), name):
                 method = getattr(self.get_model(), name)
                 if hasattr(method, "short_description"):
@@ -254,15 +259,6 @@ class CRUDView(ListView):
                 message = "Unable to locate '%s' on %s" % (name, self)
                 raise AttributeError(message)
         return label
-
-    def get_headers(self):
-        """
-        Returns the headeers for the individual columns of the table view.
-        """
-        headers = []
-        for i, field_name in enumerate(self.list_display):
-            headers.append(self.label_for_field(field_name))
-        return headers
 
     def get_results(self):
         """
@@ -366,10 +362,6 @@ class CRUDView(ListView):
 
         # list-view context data
         context.update(super(CRUDView, self).get_context_data(**kwargs))
-        '''
-            'col_headers': self.get_headers(),
-            'results': self.get_results(),
-        '''
         extra_context = {
             'pagetitle': self.get_pagetitle(),
             'list_display': self.list_display,

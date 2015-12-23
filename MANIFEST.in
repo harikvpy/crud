@@ -1,0 +1,2 @@
+recursive-include singleurlcrud/static *
+recursive-include singleurlcrud/templates *

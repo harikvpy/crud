@@ -75,6 +75,7 @@ def render_item(context, item, rowindex):
     context['rowindex'] = rowindex
     context['can_delete'] = context['view'].can_delete(item) and \
             getattr(item, 'can_delete', True)
-    context['can_edit'] = context['view'].can_edit(item)
+    context['can_edit'] = context['view'].can_edit(item) and \
+            getattr(item, 'can_edit', True)
     return context
 

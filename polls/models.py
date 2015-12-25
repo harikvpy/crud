@@ -25,6 +25,9 @@ class Question(models.Model):
     def can_delete(self):
         return self.question_text != 'test'
 
+    def can_edit(self):
+        return self.question_text == 'test'
+
 class Choice(models.Model):
     question = models.ForeignKey(Question)
     choice_text = models.CharField(max_length=200)

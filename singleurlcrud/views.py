@@ -440,9 +440,12 @@ class CRUDView(ListView):
     def post_delete(self, request, *args, **kwargs):
         # delete
         item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
-        item.delete()
-        msg = _('%s %s deleted') % (self.get_model()._meta.verbose_name.title(), item)
-        messages.info(self.request, msg)
+        # verify global delete view flag and individual item deletable flag
+        # (if it was specified) before doing the actual deletion.
+        if self.can_delete() and getattr(item, 'can_delete', True):
+            item.delete()
+            msg = _('%s %s deleted') % (self.get_model()._meta.verbose_name.title(), item)
+            messages.info(self.request, msg)
         return HttpResponseRedirect(self.get_opless_path())
 
     def post_action(self, request, *args, **kwargs):

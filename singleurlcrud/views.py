@@ -122,22 +122,7 @@ class CRUDView(ListView):
         """
         Returns the form instance contructed from the supplied form_class.
         """
-        form = form_class(**kwargs)
-        # Iterate through all the form's fields and if any of the fields
-        # is an instance of ForeignKey and the user has requested the
-        # related model to be editable inline, replace its widget with our
-        # CustomRelatedFieldWidgetWrapper that allows this.
-        for field in self.model._meta.fields:
-            if isinstance(field, models.ForeignKey) and \
-                    field.name in self.related_field_crud_urls:
-                # replace the form field's widget with CRFWW
-                form_field_ = form.fields[field.name]
-                from django.forms import Select
-                form_field_.widget = CustomRelatedFieldWidgetWrapper(
-                        Select(choices=form_field_.choices),
-                        self.related_field_crud_urls[field.name],
-                        True)
-        return form
+        return form_class(**kwargs)
 
     def get_form_fields(self):
         """
@@ -315,13 +300,54 @@ class CRUDView(ListView):
         context.update(extra_context)
         return context
 
+    def _get_form_helper(self, form_class, **kwargs):
+        '''
+        Helper function to return a form class instance where the
+        widgets for RelatedField instances are replaced with the
+        CustomRelatedFieldWidgetWrapper so that inline edit/add
+        operations can be supported like in admin CRUD.
+
+        Note that this method is only necessary to be invoked for
+        those cases where the form is returned in the context to be
+        rendered by the template. For POST request data validation, the
+        original self.get_form() method is used.
+        '''
+        form = self.get_form(form_class, **kwargs)
+        # If related_field_crud_urls was specified, iterate through all the
+        # form's fields and if any of the fields is an instance of
+        # ForeignKey and the user has requested the related model to be
+        # editable inline, replace its widget with our
+        # CustomRelatedFieldWidgetWrapper that allows this.
+        for field in self.model._meta.fields:
+            if isinstance(field, models.ForeignKey) and \
+                    field.name in self.related_field_crud_urls:
+                # replace the form field's widget with CRFWW
+                form_field_ = form.fields[field.name]
+                from django.forms import Select
+                form_field_.widget = CustomRelatedFieldWidgetWrapper(
+                        Select(choices=form_field_.choices),
+                        self.related_field_crud_urls[field.name],
+                        True)
+        # replace the widget for those fields
+        for field in self.model._meta.fields:
+            if isinstance(field, models.ForeignKey) and \
+                    field.name in self.related_field_crud_urls:
+                # replace the form field's widget with CRFWW
+                form_field_ = form.fields[field.name]
+                from django.forms import Select
+                form_field_.widget = CustomRelatedFieldWidgetWrapper(
+                        Select(choices=form_field_.choices),
+                        self.related_field_crud_urls[field.name],
+                        True)
+        return form
+
     def get_add_context_data(self, **kwargs):
         '''Return context data for add opereation'''
         context = kwargs
         context['add'] = True
         context['pagetitle'] = _("Create new %s") % (self.get_model()._meta.verbose_name.title())
         if 'form' not in context:
-            context['form'] = self.get_form(self.get_form_class())
+            context['form'] = self._get_form_helper(self.get_form_class())
         return context
 
     def get_edit_context_data(self, **kwargs):
@@ -334,7 +360,7 @@ class CRUDView(ListView):
         context['edit'] = True
         context['pagetitle'] = _("Edit %s") % object_title
         if 'form' not in context:
-            context['form'] = self.get_form(self.get_form_class(), instance=_object)
+            context['form'] = self._get_form_helper(self.get_form_class(), instance=_object)
         return context
 
     def get_delete_context_data(self, **kwargs):

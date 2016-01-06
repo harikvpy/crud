@@ -468,7 +468,7 @@ class CRUDView(ListView):
         item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
         # verify global delete view flag and individual item deletable flag
         # (if it was specified) before doing the actual deletion.
-        if self.can_delete() and getattr(item, 'can_delete', True):
+        if getattr(item, 'can_delete', True) and self.can_delete(item):
             item.delete()
             msg = _('%s %s deleted') % (self.get_model()._meta.verbose_name.title(), item)
             messages.info(self.request, msg)

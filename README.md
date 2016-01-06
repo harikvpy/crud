@@ -33,3 +33,5 @@ TBD
       get_form() method, inline editing/addition of RelatedField objects
       is not available. This version includes a fix for this.
 
+0.6 - Fix incorrect arguments to can_delete() method call.
+

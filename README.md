@@ -35,3 +35,6 @@ TBD
 
 0.6 - Fix incorrect arguments to can_delete() method call.
 
+0.7 - Fix media property such that it only returns media fragments necessary
+      for the current CRUD operation.
+

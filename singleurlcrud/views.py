@@ -96,10 +96,12 @@ class CRUDView(ListView):
         css = { 'all': ('singleurlcrud/css/crud.css',) }
         js = self.js
         from django.forms.widgets import Media
-        form = self.get_form(self.get_form_class())
         media = Media(js=['%s' % url for url in js], css=css)
-        if hasattr(form, 'media'):
-            media += form.media
+        op = self.get_op()
+        if op == "add" or op == "edit":
+            form = self.get_form(self.get_form_class())
+            if hasattr(form, 'media'):
+                media += form.media
         return media
 
     def get_form_class(self):

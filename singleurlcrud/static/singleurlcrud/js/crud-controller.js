@@ -213,13 +213,7 @@ function editItem(id) {
     window.location = compose_url("o=edit", "item="+id);
 }
 function deleteItem(id, name) {
-    // build the 'Are you sure you want to...' message
-    var msg = delete_msg_templ.replace("\{1\}", name);
-    $("#msgDeleteConfirm").text(msg);
-    $("#itemList").addClass('not');
-    $("#formDelete").attr('action', compose_url("o=delete", "item="+id));
-    $("#deleteItemPanel").removeClass('not');
-    item_to_delete = id;
+    window.location = compose_url("o=delete", "item="+id);
 }
 /* 
    Cancel an ongoing edit operation. Depending on Edit/Add mode, take appropriate action.
@@ -236,8 +230,7 @@ function cancelEdit() {
 }
 /* hide the delete confirmation panel and display the item list */
 function cancelDelete() {
-    $("#deleteItemPanel").addClass('not');
-    $("#itemList").removeClass('not');
+    window.location = get_opless_url();
 }
 /* invoke a custom action */
 function invokeAction(handler) {

@@ -15,7 +15,7 @@
         <button type="button" class="btn btn-success {{btn_class}}" title="{% trans 'Edit' %}" onclick="editItemThunk({{object.pk}});"><span class="glyphicon glyphicon-pencil"></span></a>
         {% endif %}
         {% if item_deletable %}
-        <button type="button" class="btn btn-danger {{btn_class}}" title="{% trans 'Delete' %}" onclick="deleteItem({{object.pk}}, '{{ object }}');"><span class="glyphicon glyphicon-trash"></span></a>
+        <button type="button" class="btn btn-danger {{btn_class}}" title="{% trans 'Delete' %}" onclick="deleteItemThunk({{object.pk}}, '{{ object }}');"><span class="glyphicon glyphicon-trash"></span></a>
         {% endif %}
         </div>
     </td>

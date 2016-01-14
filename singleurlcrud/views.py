@@ -260,6 +260,8 @@ class CRUDView(ListView):
             return ['singleurlcrud/edit.html']
         elif op == u'edit':
             return ['singleurlcrud/edit.html']
+        elif op == u'delete':
+            return ['singleurlcrud/delete.html']
         return ['singleurlcrud/list.html']
 
     def get_context_data(self, **kwargs):
@@ -314,6 +316,7 @@ class CRUDView(ListView):
             'pagetitle': self.get_pagetitle(),
             'list_display': self.list_display,
             'delete_msg': _("Are you sure you want to delete the %s: {1}") % self.get_model()._meta.verbose_name.title(),
+            'delete_item_custom_url': self.get_delete_item_custom_url(),
             'create_button_text': _('Create new %s') % self.get_model()._meta.verbose_name.title(),
             'actions': self.get_actions_as_str(),
             'itemactions': self.get_item_actions(),
@@ -395,7 +398,9 @@ class CRUDView(ListView):
         object_title = _object._meta.verbose_name.title()
         context['object'] = _object
         context['pagetitle'] = _("Delete %s") % object_title
-        context['delete_msg'] = _("Are you sure you want to delete the %s: {1}") % object_title,
+        context['delete_msg'] = _("Are you sure you want to delete the %s: %s") \
+                % (self.get_model()._meta.verbose_name.title(), str(_object))
+        context['delete_item_custom_url'] = self.get_delete_item_custom_url(),
         return context
 
     def get_paginate_by(self, queryset):

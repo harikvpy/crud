@@ -4,8 +4,6 @@
 {{ media }}
 {% endblock %}
 {% block content %}
-<section id="itemList" class="not">
-{% block crud_itemlist %}
 {% if actions|length or item_actions|length %}<form id="id_form_action" role="form" action="" method="post">{% csrf_token %}{% endif %}
 <script>
 function addNewItemThunk() {
@@ -22,6 +20,15 @@ function editItemThunk(itemId) {
     window.location = editURL;
 {% else %}
     editItem(itemId);
+{% endif %}
+}
+function deleteItemThunk(itemId) {
+{% if edit_item_custom_url|length %}
+    var deleteURL = "{{ delete_item_custom_url }}";
+    deleteURL += "?item="+itemId.toString();
+    window.location = deleteURL;
+{% else %}
+    deleteItem(itemId);
 {% endif %}
 }
 </script>
@@ -87,25 +94,4 @@ function editItemThunk(itemId) {
 </ul>
 </div>
 {% endif %}
-{% endblock crud_itemlist %}
-</section>
-<section id="deleteItemPanel" class="not">
-{% block deleteitempanel %}
-<div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">{% trans 'Confirm deletion' %}</h3></div>
-    <div class="panel-body">
-    {% block crud_deleteitempanel %}
-        <form id="formDelete" role="form" action="" method="post">
-            {% csrf_token %}
-            <p><span id="msgDeleteConfirm">{{ delete_msg }}</span></p>
-            <div class="form-group">
-                <button id="idYes" type="submit" class="btn btn-primary">{% trans "Yes" %}</button>
-                <a id='idNo' class="btn btn-default" href="javascript:void(0);" onclick="cancelDelete()">{% trans "No" %}</a>
-            </div>
-        </form>
-    {% endblock crud_deleteitempanel %}
-    </div>
-</div>
-{% endblock deleteitempanel %}
-</section>
 {% endblock content %}

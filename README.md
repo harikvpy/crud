@@ -62,3 +62,6 @@ TBD
 0.11  Action buttons changed to use buttons grouping them into a btn-group.
       Added colors to them indicating the severity of the action's outcome.
 
+0.12  Move delete operation into an independent GET action through the 
+      '?o=delete' parameter.
+

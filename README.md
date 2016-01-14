@@ -56,3 +56,6 @@ TBD
       and can_delete has been replaced by enable_create, enable_edit & 
       enable_delete respectively.
 
+0.10  Changed table css classes to be specified as view setting provided
+      through RequestContext.
+      

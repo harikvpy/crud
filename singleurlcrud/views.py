@@ -79,6 +79,7 @@ class CRUDView(ListView):
     enable_delete = True
     context_object_name = 'object_list'
     pagetitle = None
+    table_css_classes = 'table table-striped table-condensed table-bordered'
 
     # set this to a dictionary where each item is the CRUD url of
     # the related field, indexed by the field's name
@@ -273,6 +274,7 @@ class CRUDView(ListView):
             'enable_create': self.enable_create,
             'enable_edit': self.enable_edit,
             'enable_delete': self.enable_delete,
+            'table_css_classes': self.table_css_classes,
             }
 
         context_handler = {

@@ -5,15 +5,19 @@
     {% endfor %}
     {% if itemactions|length or enable_edit or enable_delete %}
     <td class="text-center">
+        <div class="btn-group" role="group">
         {% for action in itemactions %}
-        <a href="{%if action.url%}{{action.url}}?object={{object.pk}}{%else%}javascript:void(0);{%endif%}" title="{{action.title}}" {%if not action.url%}onclick="invokeCustomItemAction('{{action.key}}', {{object.pk}});"{%endif%}><span class="{{action.css}}"></span></a>
+        <button type="button" class="btn btn-primary {{btn_class}}" onclick="javascript:invokeCustomItemAction('{{action.key}}', '{{object.pk}}');" title="{{action.title}}" {%if not action.url%}onclick="invokeCustomItemAction('{{action.key}}', {{object.pk}});"{%endif%}><span class="{{action.css}}"></span></a>
         {% endfor %}
-        {% if item_deletable %}
-        <a href="javascript:void(0);" title="{% trans 'Delete' %}" onclick="deleteItem({{object.pk}}, '{{ object }}');"><span class="glyphicon glyphicon-trash"></span></a>
-        {% endif %}
+        </div>
+        <div class="btn-group" role="group">
         {% if item_editable %}
-        <a href="javascript:void(0);" title="{% trans 'Edit' %}" onclick="editItemThunk({{object.pk}});"><span class="glyphicon glyphicon-pencil"></span></a>
+        <button type="button" class="btn btn-success {{btn_class}}" title="{% trans 'Edit' %}" onclick="editItemThunk({{object.pk}});"><span class="glyphicon glyphicon-pencil"></span></a>
         {% endif %}
+        {% if item_deletable %}
+        <button type="button" class="btn btn-danger {{btn_class}}" title="{% trans 'Delete' %}" onclick="deleteItem({{object.pk}}, '{{ object }}');"><span class="glyphicon glyphicon-trash"></span></a>
+        {% endif %}
+        </div>
     </td>
     {% endif %}
 </tr>

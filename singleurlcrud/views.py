@@ -80,6 +80,7 @@ class CRUDView(ListView):
     context_object_name = 'object_list'
     pagetitle = None
     table_css_classes = 'table table-striped table-condensed table-bordered'
+    action_col_width = ''
 
     # set this to a dictionary where each item is the CRUD url of
     # the related field, indexed by the field's name
@@ -291,6 +292,24 @@ class CRUDView(ListView):
 
         # list-view context data
         context.update(super(CRUDView, self).get_context_data(**kwargs))
+
+        # determine the optimum width for the action column buttons
+        # such that they don't get wrapped to another line
+        num_action_btns = 0;
+        if self.enable_edit:
+            num_action_btns += 1
+        if self.enable_delete:
+            num_action_btns += 1
+        num_action_btns += len(self.get_item_actions())
+        if num_action_btns > 2:
+            # if there are more than 2 buttons, we reduce the individual button
+            # size by using the BS style btn-xs
+            action_col_width = 40*num_action_btns
+        else:
+            # for two buttons or lessm we go with BS btn-sm which is
+            # 41 pixels wide.
+            action_col_width = 45*num_action_btns
+
         extra_context = {
             'pagetitle': self.get_pagetitle(),
             'list_display': self.list_display,
@@ -301,6 +320,7 @@ class CRUDView(ListView):
             'add_item_custom_url': self.get_add_item_custom_url(),
             'edit_item_custom_url': self.get_edit_item_custom_url(),
             'delete_item_custom_url': self.get_delete_item_custom_url(),
+            'action_col_width': str(action_col_width)+'px',
         }
         context.update(extra_context)
         return context

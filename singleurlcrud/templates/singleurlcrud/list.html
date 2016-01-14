@@ -48,7 +48,7 @@ function editItemThunk(itemId) {
         <th>{% if actions|length %}{% if forloop.first %}<input class="item-selection-checkbox-header" type="checkbox" id="id_select_all"></input>&nbsp;&nbsp;{% endif %}{% endif %}{% field_label view name %}</th>
         {% endfor %}
         {% if enable_edit or enable_delete or itemactions|length %}
-        <th>{% trans "Action" %}</th>
+        <th width="{{ action_col_width }}">{% trans "Action" %}</th>
         {% endif %}
     </tr>
 </thead>

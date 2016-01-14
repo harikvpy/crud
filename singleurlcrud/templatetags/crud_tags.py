@@ -72,12 +72,15 @@ def render_item(context, item, rowindex):
     Tag to render an object.
     """
     context['item'] = item
+    view = context['view']
     context['rowindex'] = rowindex
-    context['enable_edit'] = context['view'].enable_edit
-    context['enable_delete'] = context['view'].enable_delete
-    context['item_deletable'] = context['view'].item_deletable(item) and \
+    context['itemactions'] = view.get_item_actions()
+    context['enable_edit'] = view.enable_edit
+    context['enable_delete'] = view.enable_delete
+    context['item_deletable'] = view.item_deletable(item) and \
             not getattr(item, 'is_readonly', False)
-    context['item_editable'] = context['view'].item_editable(item) and \
+    context['item_editable'] = view.item_editable(item) and \
             not getattr(item, 'is_readonly', False)
+    context['btn_class'] = 'btn-sm' if view.get_item_actions() else 'btn-sm'
     return context
 

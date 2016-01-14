@@ -45,16 +45,6 @@ $(document).ready(function() {
 </style>
 {% endif %}
 {% endblock %}
-{% block breadcrumbs %}
-<ol class="breadcrumb">
-    <li><a href="{% url 'dashboard:home' %}">{% trans 'Home' %}</a></li>
-    {% block breadcrumbslist %}
-        {% for name, link in breadcrumbs %}
-        <li>{% if link %}<a href="{{ link }}">{% endif %}{{ name }}{% if link %}</a>{% endif %}</li>
-        {% endfor %}
-    {% endblock %}
-</ol>
-{% endblock breadcrumbs %}
 {% block content %}
 <form id="formEdit" role="form" action="" method="post">
     {% csrf_token %}

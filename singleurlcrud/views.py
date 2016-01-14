@@ -74,10 +74,11 @@ class CRUDView(ListView):
             'admin/js/admin/RelatedObjectLookups.js' ]
     version = 1
     form_class = None
-    can_create = True
-    can_edit = True
-    can_delete = True
+    enable_create = True
+    enable_edit = True
+    enable_delete = True
     context_object_name = 'object_list'
+    pagetitle = None
 
     # set this to a dictionary where each item is the CRUD url of
     # the related field, indexed by the field's name
@@ -269,9 +270,9 @@ class CRUDView(ListView):
             'breadcrumbs': self.get_breadcrumbs(),
             'media': self.media(),
             'item_name': self.get_model()._meta.verbose_name.title(),
-            'can_create': self.can_create,
-            'can_edit': self.can_edit,
-            'can_delete': self.can_delete,
+            'enable_create': self.enable_create,
+            'enable_edit': self.enable_edit,
+            'enable_delete': self.enable_delete,
             }
 
         context_handler = {
@@ -470,7 +471,7 @@ class CRUDView(ListView):
         item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
         # verify global delete view flag and individual item deletable flag
         # (if it was specified) before doing the actual deletion.
-        if getattr(item, 'can_delete', True) and self.can_delete(item):
+        if not getattr(item, 'is_readonly', False) and self.item_deletable(item):
             item.delete()
             msg = _('%s %s deleted') % (self.get_model()._meta.verbose_name.title(), item)
             messages.info(self.request, msg)
@@ -534,6 +535,8 @@ class CRUDView(ListView):
     # ###############################################################
 
     def get_pagetitle(self):
+        if self.pagetitle:
+            return self.pagetitle
         title = self.get_model()._meta.verbose_name_plural
         return title.capitalize()
 
@@ -567,13 +570,13 @@ class CRUDView(ListView):
         """
         return []
 
-    def can_delete(self, obj):
+    def item_deletable(self, obj):
         """
         Return a boolean to indicate if the item can be deleted (defaults to True).
         """
         return True
 
-    def can_edit(self, obj):
+    def item_editable(self, obj):
         """
         Return a boolean to indicate if the item can be edited (defaults to True).
         """

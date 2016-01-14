@@ -4,7 +4,7 @@ setup(
     name="singleurlcrud",
     description="Django CRUD using a single view, and hence single URL, for all CRUD operations",
     long_description=open('README.md').read(),
-    version="0.7",
+    version="0.9",
     author="Hari Mahadevan",
     author_email="hari@hari.xyz",
     url="http://www.github.com/harikvpy/singleurlcrud",

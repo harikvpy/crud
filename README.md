@@ -2,9 +2,17 @@
 A single view implementation of basic table CRUD operations for Django.
 
 # Introduction
-Django comes with an excellent admin framework that provides a sophisticated interface for table CRUD operations. However, the admin framework is closely tied to Django's default user management and its permission management systems. If your project bypasses either of these, employing the CRUD in the admin framework can get a little tricky. Besides using the admin CRUD also implicitly adds a number urls to your url namespace.
+Django comes with an excellent admin framework that provides a sophisticated 
+interface for table CRUD operations. However, the admin framework is closely 
+tied to Django's default user management and its permission management systems.
+If your project bypasses either of these, employing the CRUD in the admin 
+framework can get a little tricky. Besides using the admin CRUD also implicitly 
+adds a number urls to your url namespace.
 
-This project is aimed at addressing the above shortcomings by developing a pure django view that provides basic table CRUD operations. You derive from this view providing it with the appropriate initialization parameters and then hook it up to the url namespace yourself explicitly.
+This project is aimed at addressing the above shortcomings by developing a pure 
+django view that provides basic table CRUD operations. You derive from this 
+view providing it with the appropriate initialization parameters and then hook 
+it up to the url namespace yourself explicitly.
 
 # Dependencies
   django-bootstrap3
@@ -37,4 +45,14 @@ TBD
 
 0.7 - Fix media property such that it only returns media fragments necessary
       for the current CRUD operation.
+
+0.8 - Add support for view to customize page titles by specifying a class
+      variable 'pagetitle'. This title will be used by default and if not
+      specified the model's verbose_name_plural will be set as the title
+      in the context.
+
+0.9 - Refactor cryptic flag names to more friendly names. Eg.: can_delete() has
+      been changed to item_deletable(). Also, global flags can_create, can_edit
+      and can_delete has been replaced by enable_create, enable_edit & 
+      enable_delete respectively.
 

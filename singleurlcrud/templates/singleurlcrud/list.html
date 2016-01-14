@@ -26,7 +26,7 @@ function editItemThunk(itemId) {
 }
 </script>
 <div class="form-group" style="margin-bottom: 10px;">
-    {% if can_create %}
+    {% if enable_create %}
     <button id="addItem" type="button" class="btn btn-primary" title="{{ create_button_text }}" onclick="addNewItemThunk();">{{ create_button_text }}</button>
     {% endif %}
     {% if object_list|length > 0 and actions|length %}
@@ -46,7 +46,9 @@ function editItemThunk(itemId) {
     {% for name in list_display %}
     <th>{% if actions|length %}{% if forloop.first %}<input class="item-selection-checkbox-header" type="checkbox" id="id_select_all"></input>&nbsp;&nbsp;{% endif %}{% endif %}{% field_label view name %}</th>
     {% endfor %}
+    {% if enable_edit or enable_delete or itemactions|length %}
     <th>{% trans "Action" %}</th>
+    {% endif %}
 </thead>
 <tbody>
 {% for object in object_list %}
@@ -57,35 +59,6 @@ function editItemThunk(itemId) {
         </script>
     {% endif %}
 {% endfor %}
-{% comment %}
-{% for row in results %}
-    <tr>
-    {% for item in row %}
-        {% if not forloop.last %}
-        <td>{% if actions|length %}{% if forloop.first %}<input class="item-selection-checkbox" type="checkbox" id="id_select_{{ forloop.parentloop.counter0 }}" data-pk="{{ row|last|lookup:0 }}"></input>&nbsp;&nbsp;{% endif %}{% endif %}{{ item }}</td>
-        {% else %}
-        <td>
-            {% for action in itemactions %}
-            <a href="{%if action.url%}{{action.url}}?object={{item.0}}{%else%}javascript:void(0);{%endif%}" title="{{action.title}}" {%if not action.url%}onclick="invokeCustomItemAction('{{action.key}}', {{item}});"{%endif%}><span class="{{action.css}}"></span></a>
-            {% endfor %}
-            {% if item.1 %}
-            <a href="javascript:void(0);" title="{% trans 'Delete' %}" onclick="deleteItem({{item.0}}, '{{ object_list|lookup:forloop.parentloop.counter0 }}');"><span class="glyphicon glyphicon-trash"></span></a>
-            {% else %}
-            <span class="glyphicon glyphicon-ban-circle"></span>
-            {% endif %}
-            {% if can_edit %}
-            <a href="javascript:void(0);" title="{% trans 'Edit' %}" onclick="editItemThunk({{item.0}});"><span class="glyphicon glyphicon-pencil"></span></a>
-            {% endif %}
-        </td>
-        {% endif %}
-    {% endfor %}
-    {% if forloop.last %}
-        <script type="text/javascript" charset="utf-8">
-            totalItems = {{ forloop.counter }};
-        </script>
-    {% endif %}
-{% endfor %}
-{% endcomment %}
 </tbody>
 </table>
 {% else %}

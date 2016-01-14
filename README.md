@@ -59,3 +59,6 @@ TBD
 0.10  Changed table css classes to be specified as view setting provided
       through RequestContext.
       
+0.11  Action buttons changed to use buttons grouping them into a btn-group.
+      Added colors to them indicating the severity of the action's outcome.
+

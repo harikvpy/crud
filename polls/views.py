@@ -27,13 +27,14 @@ class QuestionCRUDView(CRUDView):
     def delete_multiple_items(self, request, items):
         pass
 
-
     class VoteItemAction(object):
         title = 'Vote'
         key = 'vote1'
         css = 'glyphicon glyphicon-envelope'
 
         def doAction(self, item):
+            import logging
+            logging.getLogger('general').info("VoteItemAction invoked!")
             pass
 
     def get_item_actions(self):

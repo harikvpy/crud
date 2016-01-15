@@ -69,24 +69,23 @@ AUTHORS = [
         ]
 
 class Command(BaseCommand):
-    help = "Creates a large data tables for testing"
+    help = "Loads the test app 'polls' with Author and Question records for testing."
 
     def add_arguments(self, parser):
-
         # optional argument specifying number of authors & questions
         parser.add_argument('--authors',
                 dest='authors',
                 type=int,
                 action='store',
                 default=20,
-                help="Number of author records to create, default 20")
+                help="Number of author records to create, defaults to 20")
 
         parser.add_argument('--questions',
                 dest='questions',
                 type=int,
                 action='store',
                 default=50,
-                help="Number of question records to create, default 50")
+                help="Number of question records to create, defaults to 50")
 
     def handle(self, *args, **options):
         try:

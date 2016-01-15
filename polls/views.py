@@ -25,7 +25,7 @@ class QuestionCRUDView(CRUDView):
             ]
 
     def delete_multiple_items(self, request, items):
-        pass
+        Question.objects.filter(pk__in=items).delete()
 
     class VoteItemAction(object):
         title = 'Vote'

@@ -59,16 +59,18 @@ except ImportError:
     from django.contrib.admin.utils import display_for_field, display_for_value
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, ImproperlyConfigured
 
+from pure_pagination.mixins import PaginationMixin
+
 from singleurlcrud.widgets import CustomRelatedFieldWidgetWrapper
 
-class CRUDView(ListView):
+class CRUDView(PaginationMixin, ListView):
     """
     Base view class for a single page CRUD interface.
 
     Uses the ListView as the base which lists the records of the
     table in tabular form. CRUD operations are driven from that.
     """
-    paginate_by = 10
+    paginate_by = 20
     template_name = "singleurlcrud/list.html"
     js = [ 'singleurlcrud/js/crud-controller.js',
             'admin/js/admin/RelatedObjectLookups.js' ]

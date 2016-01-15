@@ -65,3 +65,9 @@ TBD
 0.12  Move delete operation into an independent GET action through the 
       '?o=delete' parameter.
 
+0.13  Use django-pure-pagination for pagination. This provides margin page
+      numbers which provides a nice UX for listing tables with very large
+      amounts of data, number of pages for which exceed the available 
+      width in the screen.
+      
+

@@ -46,28 +46,6 @@ function deleteItemThunk(itemId) {
         </ul>
     </div>
     {% endif %}
-    {% if is_paginated %}
-    <ul class="pagination pull-right" style="margin-top: 0px; margin-bottom: 5px;">
-        {% if page_obj.has_previous %}
-        <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
-        {% else %}
-        <li class="disabled"><a href="">&laquo;</a></li>
-        {% endif %}
-        {% for p in paginator.page_range %}
-            {% if page_obj.number == p %}
-            <li class="disabled"><a href="javascript:void(0);">{{p}}</a></li>
-            {%else%}
-            <li><a href="?page={{p}}">{{ p }}</a></li>
-            {%endif%}
-        {% endfor %}
-        <li><a href="?page=all">{% trans 'All' %}</a></li>
-        {% if page_obj.has_next %}
-        <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
-        {% else %}
-        <li class="disabled"><a href="#">&raquo;</a></li>
-        {% endif %}
-    </ul>
-    {% endif %}
 </div>
 {% if object_list|length > 0 %}
 <table class="{{ table_css_classes }}">
@@ -92,6 +70,44 @@ function deleteItemThunk(itemId) {
 {% endfor %}
 </tbody>
 </table>
+<div class="row">
+    {% if is_paginated %}
+    {# bootstrap ul has margin-top set to 20px, remove it #}
+    <ul class="pagination pull-right" style="margin-top: -10px; margin-right: 15px;">
+        {% if page_obj.has_previous %}
+        <li><a href="?{{ page_obj.previous_page_number.querystring }}">&laquo;</a></li>
+        {% else %}
+        <li class="disabled"><a href="">&laquo;</a></li>
+        {% endif %}
+        {% comment %}
+        {% for p in paginator.page_range %}
+            {% if page_obj.number == p %}
+            <li class="disabled"><a href="javascript:void(0);">{{p}}</a></li>
+            {%else%}
+            <li><a href="?page={{p}}">{{ p }}</a></li>
+            {%endif%}
+        {% endfor %}
+        {% endcomment %}
+        {% for page in page_obj.pages %}
+            {% if page %}
+                {% ifequal page page_obj.number %}
+                <li class="disabled"><a href="javascript:void(0);">{{ page }}</a></li>
+                {% else %}
+                <li><a href="?{{page.querystring}}">{{ page }}</a></li>
+                {% endifequal %}
+            {% else %}
+            <li class="disabled"><a href="javascript:void(0);">...</a></li>
+            {% endif %}
+        {% endfor %}
+        <li><a href="?page=all">{% trans 'All' %}</a></li>
+        {% if page_obj.has_next %}
+        <li><a href="?{{ page_obj.next_page_number.querystring }}">&raquo;</a></li>
+        {% else %}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {% endif %}
+    </ul>
+    {% endif %}
+</div>
 {% else %}
 {% trans "No items" %}
 {% endif %}

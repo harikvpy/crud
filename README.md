@@ -16,9 +16,44 @@ it up to the url namespace yourself explicitly.
 
 # Dependencies
   django-bootstrap3
+  django-pure-pagination
 
 # Quickstart
-TBD
+Consider the following model (taken from 'polls' app, which is bundled with the 
+crud source code), 
+
+```python
+from django.db import models
+
+class Question(models.Model):
+    question_text = models.CharField(max_length=200)
+    pub_date = models.DateTimeField('Date published')
+    author = models.ForeignKey(Author, null=True, default=None)
+```
+To get a fully functional CRUD for this table, declare a view like below:
+
+```python
+from .models import Question
+
+QuestionCRUDView(CRUDView):
+    model = Question
+    list_display = ('question_text', 'pub_date', 'author')
+```
+Thereafter, hook this view to the desired url through urls.py:
+
+```python
+from django.conf.urls import url
+from .views import *
+
+urlpatterns = [
+        url(r'^questions/$', QuestionCRUDView.as_view(), name='questions')
+        ]
+```
+
+That's it! You get a fully functional CRUD that will allow you to create,
+update and delete records from Question table, all rooted at the url
+'yoursite.com/questions/'.
+
 
 # Changelog
 

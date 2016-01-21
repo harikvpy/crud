@@ -1,7 +1,12 @@
-# crud
-A single view implementation of basic table CRUD operations for Django.
+============================================
+Django CRUD operations through a single view
+============================================
 
-# Introduction
+A single view implementation of table CRUD operations for Django.
+
+Introduction
+------------
+
 Django comes with an excellent admin framework that provides a sophisticated 
 interface for table CRUD operations. However, the admin framework is closely 
 tied to Django's default user management and its permission management systems.
@@ -22,73 +27,83 @@ django view that provides basic table CRUD operations. You derive from this
 view providing it with the appropriate initialization parameters and then hook 
 it up to the url namespace yourself explicitly.
 
-# Dependencies
+Dependencies
+------------
+
   * django-bootstrap3
   * django-pure-pagination
 
-# Installation
+Installation
+------------
 
-Easiest way to install crud is to get it from PyPi using pip. You can do this
-with the command
+1. Easiest way to install crud is to get it from PyPi using pip. Do this by: 
 
-```python
-pip install crud
-```
+    ``pip install singleurlcrud``
 
-This will install crud into your current python environment.
+2. Add it to INSTALLED_APPS in projects ``settings.py``:
 
-Add `singleurlcrud` to your projects INSTALLED_APPS list from its settings.py.
+    .. code:: Django
 
-```python
-INSTALLED_APPS = (
-    ...
-    'singleurlcrud',
-    ...
-    )
-```
+    INSTALLED_APPS = (
+        ...
+        'singleurlcrud',
+        ...
+        )
 
-# Quickstart
+Quickstart
+----------
+
 Consider the following model (taken from 'polls' app, which is bundled with the 
 crud source code), 
 
-```python
-from django.db import models
+    .. code:: Django
 
-class Question(models.Model):
-    question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('Date published')
-    author = models.ForeignKey(Author, null=True, default=None)
-```
+    from django.db import models
+
+    class Question(models.Model):
+        question_text = models.CharField(max_length=200)
+        pub_date = models.DateTimeField('Date published')
+        author = models.ForeignKey(Author, null=True, default=None)
+
 To get a fully functional CRUD for this table, declare a view like below:
 
-```python
-from singleurlcrud.views import CRUDView
-from .models import Question
+    .. code:: Django
 
-QuestionCRUDView(CRUDView):
-    model = Question
-    list_display = ('question_text', 'pub_date', 'author')
-```
+    from singleurlcrud.views import CRUDView
+    from .models import Question
+
+    QuestionCRUDView(CRUDView):
+        model = Question
+        list_display = ('question_text', 'pub_date', 'author')
+
 Thereafter, hook this view to the desired url through urls.py:
 
-```python
-from django.conf.urls import url
-from .views import *
+    .. code:: Django
 
-urlpatterns = [
-        url(r'^questions/$', QuestionCRUDView.as_view(), name='questions')
-        ]
-```
+    from django.conf.urls import url
+    from .views import *
+
+    urlpatterns = [
+            url(r'^questions/$', QuestionCRUDView.as_view(), name='questions')
+            ]
 
 That's it! You get a fully functional CRUD that will allow you to create,
 update and delete records from Question table, all rooted at the url
 'yoursite.com/questions/'.
 
-# License
+License
+-------
 
-* Modified BSD License (3-clause license)
+Distributed under Modified BSD License (3-clause license). See `LICENSE
+<LICENSE>`_ file for details.
 
-# Changelog
+Author
+------
+
+Developed by `Hari Mahadevan <http://www.hari.xyz>`_.
+
+History
+-------
 
 0.1 - Initial release
 

@@ -1,9 +1,12 @@
 from setuptools import setup, find_packages
 
+with open('README.md') as readme_file:
+    readme = readme_file.read()
+
 setup(
     name='singleurlcrud',
     description='Django CRUD, implemented using a single view and consequently a single URL.',
-    long_description=open('README.md').read(),
+    long_description=readme,
     version='0.13',
     author='Hari Mahadevan',
     author_email='hari@hari.xyz',

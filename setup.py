@@ -1,16 +1,23 @@
 from setuptools import setup, find_packages
 
+import singleurlcrud
+
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
+with open('HISTORY.rst') as history_file:
+    history = history_file.read()
+
+version = singleurlcrud.__version__
+
 setup(
     name='singleurlcrud',
-    description='Django CRUD, implemented using a single view and hence a single URL.',
-    long_description=readme,
-    version='0.16',
+    description='Django CRUD using a single view and hence a single URL.',
+    long_description=readme + '\n\n' + history,
+    version=version,
     author='Hari Mahadevan',
     author_email='hari@hari.xyz',
-    url='https://www.github.com/harikvpy/crud/tarball/0.16',
+    url='https://www.github.com/harikvpy/crud/',
     packages=[
         'singleurlcrud',
         ],

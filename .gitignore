@@ -8,3 +8,4 @@ media/*
 secret_key.py
 db.sqlite3
 singleurlcrud.egg-info/
+dist/

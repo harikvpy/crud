@@ -17,7 +17,7 @@ setup(
     license='BSD-3',
     keywords=['django', 'crud'],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',

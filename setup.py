@@ -7,7 +7,7 @@ setup(
     name='singleurlcrud',
     description='Django CRUD, implemented using a single view and consequently a single URL.',
     long_description=readme,
-    version='0.13',
+    version='0.14',
     author='Hari Mahadevan',
     author_email='hari@hari.xyz',
     url='https://www.github.com/harikvpy/crud/tarball/0.13',

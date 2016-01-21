@@ -137,4 +137,8 @@ update and delete records from Question table, all rooted at the url
       numbers which provides a nice UX for listing tables with very large
       amounts of data, number of pages for which exceed the available 
       width in the screen.
+
+0.14  Fix errors in setup.py.
+      Update status to '4 - Beta'.
+
       

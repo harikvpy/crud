@@ -10,7 +10,7 @@ setup(
     version='0.14',
     author='Hari Mahadevan',
     author_email='hari@hari.xyz',
-    url='https://www.github.com/harikvpy/crud/tarball/0.13',
+    url='https://www.github.com/harikvpy/crud/tarball/0.14',
     packages=find_packages(),
     include_package_data=True,
     install_requires=['django-pure-pagination', 'django-bootstrap3'],

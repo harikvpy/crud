@@ -2,7 +2,7 @@
 Django CRUD through a single view
 =================================
 
-A single view implementation of table CRUD operations for `Django <http://www.djangoproject.com>`_.
+A single view implementation of table CRUD operations for Django.
 
 Introduction
 ------------
@@ -16,7 +16,7 @@ framework can get a little tricky.
 Secondly, django admin also implicitly adds a number urls to your url 
 namespace. These urls list the apps whose models are are registered with it
 and for each app, the models in the app that have an admin CRUD interface. While
-these can be forcefully removed by overriding the ``ModelAdmin`` class and using
+these can be forcefully removed by overriding the ModelAdmin class and using
 it to create your own admin based CRUD classes, managing and getting around
 its various dependencies can quickly get tedious to manage. And when Django gets
 upgraded, you have the job of reviewing the new admin interface to make sure
@@ -26,12 +26,6 @@ This project is aimed at addressing the above shortcomings by developing a pure
 django view that provides basic table CRUD operations. You derive from this 
 view providing it with the appropriate initialization parameters and then hook 
 it up to the url namespace yourself explicitly.
-
-Dependencies
-------------
-
-  * django-bootstrap3
-  * django-pure-pagination
 
 Installation
 ------------
@@ -47,6 +41,12 @@ Installation
         'singleurlcrud',
         ...
         )
+
+Dependencies
+------------
+
+  * django-bootstrap3
+  * django-pure-pagination
 
 Quickstart
 ----------
@@ -81,16 +81,24 @@ Thereafter, hook this view to the desired url through urls.py::
 
 That's it! You get a fully functional CRUD that will allow you to create,
 update and delete records from Question table, all rooted at the url
-'yoursite.com/questions/'.
+``yoursite.com/questions/``.
+
+Overview
+--------
+
+TBD
+
+Reference
+---------
+
+TBD
 
 License
 -------
 
-Distributed under Modified BSD License (3-clause license). See `LICENSE
-<LICENSE>`_ file for details.
+Modified BSD
 
 Author
------
+------
 
-Developed by `Hari Mahadevan <http://www.hari.xyz>`_.
-
+`Hari Mahadevan <http://hari.xyz/>`_

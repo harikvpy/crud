@@ -324,7 +324,7 @@ class CRUDView(PaginationMixin, ListView):
             'delete_item_custom_url': self.get_delete_item_custom_url(),
             'create_button_text': _('Create new %s') % self.get_model()._meta.verbose_name.title(),
             'actions': self.get_actions_as_str(),
-            'itemactions': self.get_item_actions(),
+            'item_actions': self.get_item_actions(),
             'add_item_custom_url': self.get_add_item_custom_url(),
             'edit_item_custom_url': self.get_edit_item_custom_url(),
             'delete_item_custom_url': self.get_delete_item_custom_url(),

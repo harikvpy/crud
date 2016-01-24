@@ -74,7 +74,7 @@ def render_item(context, item, rowindex):
     context['item'] = item
     view = context['view']
     context['rowindex'] = rowindex
-    context['itemactions'] = view.get_item_actions()
+    context['item_actions'] = view.get_item_actions()
     context['enable_edit'] = view.enable_edit
     context['enable_delete'] = view.enable_delete
     context['item_deletable'] = view.item_deletable(item) and \

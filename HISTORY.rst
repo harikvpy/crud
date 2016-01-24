@@ -1,8 +1,12 @@
 History
 -------
 
-0.18
-++++
+0.19 - 2016/1/24
+++++++++++++++++
+- Fix mispelt context variable item_actions (was referred to as itemactions)
+
+0.18 - 2016/1/22
+++++++++++++++++
 - Fix formatting errors in README.rst.
 
 0.17

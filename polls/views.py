@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
+from django.http import HttpResponseRedirect
 
 from singleurlcrud.views import CRUDView
 from .models import *
@@ -35,7 +36,7 @@ class QuestionCRUDView(CRUDView):
         def doAction(self, item):
             import logging
             logging.getLogger('general').info("VoteItemAction invoked!")
-            pass
+            return HttpResponseRedirect(reverse('polls:authors'))
 
     def get_item_actions(self):
         return [self.VoteItemAction()]

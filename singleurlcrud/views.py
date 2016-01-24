@@ -536,8 +536,7 @@ class CRUDView(PaginationMixin, ListView):
             for ia in self.get_item_actions():
                 # find matching ItemAction object
                 if ia.key == handler:
-                    ia.doAction(self.get_model().objects.get(pk=item_id))
-                    break
+                    return ia.doAction(self.get_model().objects.get(pk=item_id))
             return
 
         # action to be performed on multiple items

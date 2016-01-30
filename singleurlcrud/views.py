@@ -39,6 +39,7 @@ practice at least for the foreseeable future.
                 a popup window. Capability only works for ForeignKey field.
                 ManyToManyField field implementation is pending.
 """
+from datetime import datetime
 
 from django.db import models
 from django.shortcuts import render, get_object_or_404
@@ -50,7 +51,7 @@ from django.contrib import messages
 from django.forms import ModelForm, forms
 from django.conf import settings
 from django.db.models.fields.related import RelatedField
-from django.utils import six
+from django.utils import six, formats
 from django.utils.html import escape, escapejs
 from django.utils.encoding import force_str, force_text, smart_text
 try:
@@ -83,6 +84,8 @@ class CRUDView(PaginationMixin, ListView):
     pagetitle = None
     table_css_classes = 'table table-striped table-condensed table-bordered'
     action_col_width = None
+    # labels for columns
+    list_display_labels = {}
 
     # set this to a dictionary where each item is the CRUD url of
     # the related field, indexed by the field's name
@@ -204,6 +207,8 @@ class CRUDView(PaginationMixin, ListView):
                 raise models.FieldDoesNotExist("Could not evaluate column '"+name+"'")
             if type(value) != type(True):
                 value = mark_safe(value)
+        if type(value) == datetime:
+            value = formats.date_format(value, "SHORT_DATETIME_FORMAT")
         return value
 
     def label_for_field(self, name):
@@ -211,6 +216,9 @@ class CRUDView(PaginationMixin, ListView):
         Returns a label for a field. Based on label_for_field function in
         django.contrib.admin.util.
         """
+        if self.list_display_labels.get(name):
+            return self.list_display_labels[name]
+
         model = self.get_model()
         label = ""
         try:

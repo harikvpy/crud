@@ -1,6 +1,11 @@
 History
 -------
 
+0.20 - 2016/1/30
+++++++++++++++++
+- Add support for specifying list column titles through a dictionary specified
+  as the class variable - list_display_lables
+
 0.19 - 2016/1/24
 ++++++++++++++++
 - Fix mispelt context variable item_actions (was referred to as itemactions)

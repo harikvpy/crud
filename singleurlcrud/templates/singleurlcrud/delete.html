@@ -6,15 +6,13 @@
 {% block content %}
 <form id="formDelete" role="form" action="" method="post">
     {% csrf_token %}
+    <p><span id="msgDeleteConfirm">{{ delete_msg }}</span></p>
     {% if objects|length %}
-    <p><span id="msgDeleteConfirm">{% trans "Are you sure you want to delete the following items?" %}</span></p>
     <ul>
     {% for object in objects %}
         <li>{{ object }}</li>
     {% endfor %}
     </ul>
-    {% else %}
-    <p><span id="msgDeleteConfirm">{{ delete_msg }}</span></p>
     {% endif %}
     <div class="form-group">
         <button id="idYes" type="submit" class="btn btn-primary">{% trans "Yes" %}</button>

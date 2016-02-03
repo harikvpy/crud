@@ -416,7 +416,7 @@ class CRUDView(PaginationMixin, ListView):
         object_title = _object._meta.verbose_name.title()
         context['object'] = _object
         context['pagetitle'] = _("Delete %s") % object_title
-        context['delete_msg'] = _("Are you sure you want to delete the %s: %s") \
+        context['delete_msg'] = _("Are you sure you want to delete the %s: %s?") \
                 % (self.get_model()._meta.verbose_name.title(), str(_object))
         context['delete_item_custom_url'] = self.get_delete_item_custom_url(),
         return context
@@ -429,7 +429,7 @@ class CRUDView(PaginationMixin, ListView):
         object_title = self.get_model()._meta.verbose_name_plural.title()
         context['objects'] = objects
         context['pagetitle'] = _("Delete %s") % object_title
-        context['delete_msg'] = _("Are you sure you want to delete the following %s") \
+        context['delete_msg'] = _("Are you sure you want to delete the following %s?") \
                          % object_title
         context['delete_item_custom_url'] = self.get_delete_item_custom_url(),
         return context

@@ -86,6 +86,7 @@ class CRUDView(PaginationMixin, ListView):
     action_col_width = None
     # labels for columns
     list_display_labels = {}
+    enable_multiple_item_delete = False
 
     # set this to a dictionary where each item is the CRUD url of
     # the related field, indexed by the field's name
@@ -251,7 +252,7 @@ class CRUDView(PaginationMixin, ListView):
         as the signature for the action and used to uniquely identify
         the handler during invocation.
         """
-        actions = self.get_actions()
+        actions = self.__get_actions_with_delete() #self.get_actions()
         new_actions = []
         if len(actions):
             for label, handler in actions:
@@ -265,12 +266,15 @@ class CRUDView(PaginationMixin, ListView):
         return request.GET.get('o', None)
 
     def get_template_names(self):
+        '''returns the appropriate template for each CRUD operation'''
         op = self.get_op()
         if op == u'add':
             return ['singleurlcrud/edit.html']
         elif op == u'edit':
             return ['singleurlcrud/edit.html']
         elif op == u'delete':
+            return ['singleurlcrud/delete.html']
+        elif op == u'delete_multiple':
             return ['singleurlcrud/delete.html']
         return ['singleurlcrud/list.html']
 
@@ -294,6 +298,7 @@ class CRUDView(PaginationMixin, ListView):
             'add': self.get_add_context_data,
             'edit': self.get_edit_context_data,
             'delete': self.get_delete_context_data,
+            'delete_multiple': self.get_delete_multiple_context_data,
         }
 
         if self.get_op() in context_handler:
@@ -416,6 +421,19 @@ class CRUDView(PaginationMixin, ListView):
         context['delete_item_custom_url'] = self.get_delete_item_custom_url(),
         return context
 
+    def get_delete_multiple_context_data(self, **kwargs):
+        '''Return context data for delete operation'''
+        context = kwargs
+        item_ids = self.request.GET.get("items")
+        objects = self.get_model().objects.filter(pk__in=item_ids.split(','))
+        object_title = self.get_model()._meta.verbose_name_plural.title()
+        context['objects'] = objects
+        context['pagetitle'] = _("Delete %s") % object_title
+        context['delete_msg'] = _("Are you sure you want to delete the following %s") \
+                         % object_title
+        context['delete_item_custom_url'] = self.get_delete_item_custom_url(),
+        return context
+
     def get_paginate_by(self, queryset):
         """
         Overridden to support special page value of 'all' that would disable
@@ -439,6 +457,9 @@ class CRUDView(PaginationMixin, ListView):
                 item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
                 if not self.check_permission('delete', item, request):
                     raise Http404
+            elif request.GET.get('o', '') == u'delete_multiple' and request.GET.get('items'):
+                items = self.request.GET.get("items")
+                objects = self.get_queryset().filter(pk__in=items.split(","))
             else:
                 # invalid request arguments, raise 404
                 pass
@@ -454,6 +475,7 @@ class CRUDView(PaginationMixin, ListView):
             'edit': self.post_edit,
             'delete': self.post_delete,
             'action': self.post_action,
+            'delete_multiple': self.post_delete,
             }
         op = self.get_op(request)
         if op in op_handler.keys():
@@ -508,13 +530,19 @@ class CRUDView(PaginationMixin, ListView):
 
     def post_delete(self, request, *args, **kwargs):
         # delete
-        item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
-        # verify global delete view flag and individual item deletable flag
-        # (if it was specified) before doing the actual deletion.
-        if not getattr(item, 'is_readonly', False) and self.item_deletable(item):
-            item.delete()
-            msg = _('%s %s deleted') % (self.get_model()._meta.verbose_name.title(), item)
-            messages.info(self.request, msg)
+        if request.GET.get('items'):
+            item_ids = request.GET.get('items')
+            objects = self.get_queryset().filter(pk__in=item_ids.split(","))
+            objects.delete()
+            msg = _('Selected %s have been deleted') % self.get_model()._meta.verbose_name_plural.title()
+        else:
+            item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
+            # verify global delete view flag and individual item deletable flag
+            # (if it was specified) before doing the actual deletion.
+            if not getattr(item, 'is_readonly', False) and self.item_deletable(item):
+                item.delete()
+                msg = _('%s %s deleted') % (self.get_model()._meta.verbose_name.title(), item)
+        messages.info(self.request, msg)
         return HttpResponseRedirect(self.get_opless_path())
 
     def post_action(self, request, *args, **kwargs):
@@ -551,7 +579,7 @@ class CRUDView(PaginationMixin, ListView):
         selected = request.POST.getlist('ids')
         if selected:
             handler = request.POST.get('handler')
-            actions = self.get_actions()
+            actions = self.__get_actions_with_delete() #self.get_actions()
             for label, action in actions:
                 if action.__name__ == handler:
                     return action(request, self.get_queryset().filter(pk__in=selected[0].split(',')))
@@ -568,6 +596,27 @@ class CRUDView(PaginationMixin, ListView):
             :: returns the created object (python object)
         """
         return form.save(True)
+
+    def __get_actions_with_delete(self):
+        '''
+        Helper to return the action handlers, including the multiple item
+        delete action, if it was enabled.
+        '''
+        actions = self.get_actions()
+        if self.enable_multiple_item_delete:
+            actions.append((_('Delete'), self.__delete_multiple_items))
+        return actions
+
+    def __delete_multiple_items(self, request, items):
+        '''
+        Action to delete multiple items.
+
+        A dummy function, as it's only used to force the Actions button in the
+        webpage to be forced to be rendered. Action request to delete multiple
+        items would still come as a GET request with the item ids encoded as
+        a request argument.
+        '''
+        pass
 
     # ###############################################################
     # METHODS THAT WILL TYPICALLY BE OVERRIDDEN BY THE DERIVED CLASS

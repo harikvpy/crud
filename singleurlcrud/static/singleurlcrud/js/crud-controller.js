@@ -18,7 +18,7 @@ function get_opless_url() {
         arg = args[i];
         var name = arg.split('=')[0];
         var value = '';
-        if (name != 'o' && name != 'item') {
+        if (name != 'o' && name != 'item' && name != 'items') {
             preservedArgs.push(arg);
         }
     }
@@ -232,6 +232,13 @@ function cancelEdit() {
 function cancelDelete() {
     window.location = get_opless_url();
 }
+/* action to delete multiple items */
+function deleteMultipleItems(ids) {
+    // form a GET request with action=delete_multiple
+    // and the item ids as second argument
+    window.location = compose_url("o=delete_multiple", 
+            "items="+encodeURI(ids.toString()));
+}
 /* invoke a custom action */
 function invokeAction(handler) {
     var ids = [];
@@ -239,6 +246,11 @@ function invokeAction(handler) {
     $(".item-selection-checkbox:checked").each(function(index, elem) { 
         ids.push($(elem).data('pk'));
     });
+
+    // special handling for deleting multiple items
+    if (handler == '__delete_multiple_items')
+        return deleteMultipleItems(ids);
+
     /* Submit the form after adding additional data - handler and object ids */
     var formAction = $("#id_form_action");
     formAction.attr('action', compose_url("o=action"));

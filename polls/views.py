@@ -16,7 +16,9 @@ class QuestionCRUDView(CRUDView):
     related_field_crud_urls = {
             'author': reverse_lazy("polls:authors")
             }
+    enable_multiple_item_delete = True
 
+    '''
     def get_actions(self):
         self.related_field_crud_urls = {
             'author': reverse_lazy('polls:authors') +"?o=add",
@@ -24,6 +26,7 @@ class QuestionCRUDView(CRUDView):
         return [
             ('Delete', self.delete_multiple_items)
             ]
+    '''
 
     def delete_multiple_items(self, request, items):
         Question.objects.filter(pk__in=items).delete()

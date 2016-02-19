@@ -63,11 +63,12 @@ $(document).ready(function() {
         <div class="panel-heading">
             <div class="pull-right headercontrols">
                 <div class="form-inline">
-                    <a href="javascript:void(0);" onclick="addNewItemForm()" class="btn btn-default btn-sm" title="{% trans 'Add' %}"><span class="glyphicon glyphicon-plus"></span></a>
+                    <a href="javascript:void(0);" onclick="addNewItemForm()" class="btn btn-default btn-sm" title="{% trans 'Add' %}">{% trans 'Add row' %}</a>
                 </div>
             </div>
             <h4 class="panel-title">{{ formset.model|verbose_name_plural }}</h4>
         </div>
+        <div class='panel-body'>
         {{ formset.management_form.as_p }}
         <table class="table table-condensed" id="id_items_table">
             <thead>
@@ -95,6 +96,7 @@ $(document).ready(function() {
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     </div>
     {% endif %}
     <div class="form-group">

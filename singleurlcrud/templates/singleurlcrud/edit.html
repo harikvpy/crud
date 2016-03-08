@@ -69,33 +69,34 @@ $(document).ready(function() {
             <h4 class="panel-title">{{ formset.model|verbose_name_plural }}</h4>
         </div>
         <div class='panel-body'>
-        {{ formset.management_form.as_p }}
-        <table class="table table-condensed" id="id_items_table">
-            <thead>
-                {% for field in formset.forms.0 %}
-                    {% if not field.is_hidden %}
-                        <th>{{ field.label }}</th>
-                    {% endif %}
-                {% endfor %}
-            </thead>
-            <tbody>
-                {% for f in formset.forms %}
-                <tr>
-                    {% for field in f %}
-                        {% if not field.is_hidden and not field.name = 'DELETE' %}
-                            <td>{% bootstrap_field field show_label=False %}</td>
-                        {% endif %}
-                        {% if field.name == 'DELETE' %}
-                        <td><div class="form-group" id="delete-check">{{ f.DELETE }}</div></td> 
+            {{ formset.management_form.as_p }}
+            {% bootstrap_formset_errors formset %}
+            <table class="table table-condensed" id="id_items_table">
+                <thead>
+                    {% for field in formset.forms.0 %}
+                        {% if not field.is_hidden %}
+                            <th>{{ field.label }}</th>
                         {% endif %}
                     {% endfor %}
-                </tr>
-                    {% if not forloop.last %}
-                    {{ f.id }}
-                    {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for f in formset.forms %}
+                    <tr>
+                        {% for field in f %}
+                            {% if not field.is_hidden and not field.name = 'DELETE' %}
+                                <td>{% bootstrap_field field show_label=False %}</td>
+                            {% endif %}
+                            {% if field.name == 'DELETE' %}
+                            <td><div class="form-group" id="delete-check">{{ f.DELETE }}</div></td> 
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                        {% if not forloop.last %}
+                        {{ f.id }}
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
     {% endif %}

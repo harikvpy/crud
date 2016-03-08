@@ -41,7 +41,7 @@ practice at least for the foreseeable future.
 """
 from datetime import datetime
 
-from django.db import models
+from django.db import models, transaction, IntegrityError
 from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic import ListView
@@ -134,6 +134,12 @@ class CRUDView(PaginationMixin, ListView):
         Returns the form instance contructed from the supplied form_class.
         """
         return form_class(**kwargs)
+
+    def get_formset_class(self):
+        return None
+
+    def get_formset(self, formset_class, **kwargs):
+        return formset_class(**kwargs)
 
     def get_form_fields(self):
         """
@@ -394,6 +400,8 @@ class CRUDView(PaginationMixin, ListView):
         context['pagetitle'] = _("Create new %s") % (self.get_model()._meta.verbose_name.title())
         if 'form' not in context:
             context['form'] = self._get_form_helper(self.get_form_class())
+        if self.get_formset_class() and 'formset' not in context:
+            context['formset'] = self.get_formset(self.get_formset_class())
         return context
 
     def get_edit_context_data(self, **kwargs):
@@ -406,7 +414,11 @@ class CRUDView(PaginationMixin, ListView):
         context['edit'] = True
         context['pagetitle'] = _("Edit %s") % object_title
         if 'form' not in context:
-            context['form'] = self._get_form_helper(self.get_form_class(), instance=_object)
+            context['form'] = self._get_form_helper(self.get_form_class(),
+                    instance=_object)
+        if self.get_formset_class() and 'formset' not in context:
+            context['formset'] = self.get_formset(self.get_formset_class(),
+                    instance=_object)
         return context
 
     def get_delete_context_data(self, **kwargs):
@@ -486,20 +498,38 @@ class CRUDView(PaginationMixin, ListView):
         # add a new item
         try:
             form = self.get_form(self.get_form_class(), data=self.request.POST)
+            context_args = {}
+            context_args['form'] = form
+
             if form.is_valid():
-                item = self.save_form(request, form, False, True)
-                if "_popup" in request.POST:
-                    return HttpResponse('<script type="text/javascript">opener.dismissAddRelatedObjectPopup(window, "%s", "%s");</script>' % \
-                            (escape(item.pk), escapejs(item)))
-                return HttpResponseRedirect(self.get_opless_path())
+                with transaction.atomic():
+                    item = self.save_form(request, form, False, True)
+                    # late instantiation of formset as item object is available
+                    # only after form.save() is called (thru self.save_form)
+                    if self.get_formset_class():
+                        formset = self.get_formset(self.get_formset_class(),
+                                data=self.request.POST, instance=item)
+                        context_args['formset'] = formset
+                        if formset.is_valid():
+                            formset.save()
+                        else:
+                            raise ValidationError(_("Some of the item rows have errors"))
+
+                    if "_popup" in request.POST:
+                        return HttpResponse('<script type="text/javascript">opener.dismissAddRelatedObjectPopup(window, "%s", "%s");</script>' % \
+                                (escape(item.pk), escapejs(item)))
+                    return HttpResponseRedirect(self.get_opless_path())
+        except IntegrityError as ie:
+            form._errors[forms.NON_FIELD_ERRORS] = form.error_class(ie.messages)
         except ValidationError as ve:
             form._errors[forms.NON_FIELD_ERRORS] = form.error_class(ve.messages)
 
         # re-render the view with the form together with the
         # erroneous data and error messages
-        context = self.get_context_data(form=form)
+        context = self.get_context_data(**context_args)
         if form._errors and len(form._errors) > 0:
             context['form_haserrors'] = True
+
         return self.render_to_response(context)
 
     def post_edit(self, request, *args, **kwargs):
@@ -508,22 +538,40 @@ class CRUDView(PaginationMixin, ListView):
             item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
             form = self.get_form(self.get_form_class(), instance=item, data=self.request.POST,
                         files=request.FILES)
+            context_args = {}
+            context_args['form'] = form
+
+            # early instantiation of formset class as we have the item object
+            if self.get_formset_class():
+                formset = self.get_formset(self.get_formset_class(),
+                        data=self.request.POST, instance=item)
+                context_args['formset'] = formset
+
             if form.is_valid():
-                item = self.save_form(request, form, True, True)
-                if "_popup" in request.POST:
-                    return HttpResponse('<script type="text/javascript">opener.dismissAddRelatedObjectPopup(window, "%s", "%s");</script>' % \
-                            (escape(item.pk), escapejs(item)))
-                msg = _('%s details updated') % self.get_model()._meta.verbose_name.title()
-                messages.info(self.request, msg)
-                self.object_list = self.get_queryset()
-                return HttpResponseRedirect(self.get_opless_path())
+                with transaction.atomic():
+                    item = self.save_form(request, form, True, True)
+                    if self.get_formset_class():
+                        if formset.is_valid():
+                            formset.save()
+                        else:
+                            raise ValidationError(_("Some of the item rows have errors"))
+
+                    if "_popup" in request.POST:
+                        return HttpResponse('<script type="text/javascript">opener.dismissAddRelatedObjectPopup(window, "%s", "%s");</script>' % \
+                                (escape(item.pk), escapejs(item)))
+                    msg = _('%s details updated') % self.get_model()._meta.verbose_name.title()
+                    messages.info(self.request, msg)
+                    self.object_list = self.get_queryset()
+                    return HttpResponseRedirect(self.get_opless_path())
+        except IntegrityError as ie:
+            form._errors[forms.NON_FIELD_ERRORS] = form.error_class(ie.messages)
         except ValidationError as ve:
             form._errors[forms.NON_FIELD_ERRORS] = form.error_class(ve.messages)
         except ObjectDoesNotExist as ode:
             pass
         # form has validation errors; re-render the view with the
         # form together with the erroneous data and error messages
-        context = self.get_context_data(form=form)
+        context = self.get_context_data(**context_args)
         if form._errors and len(form._errors) > 0:
             context['form_haserrors'] = True
         return self.render_to_response(context)

@@ -1,5 +1,5 @@
 {% extends base_template %}
-{% load i18n staticfiles crud_tags %}
+{% load i18n staticfiles crud_tags bootstrap3 %}
 {% block extrastyle %}
 {{ media }}
 {% endblock %}
@@ -45,6 +45,10 @@ function deleteItemThunk(itemId) {
             {% endfor %}
         </ul>
     </div>
+    {% else %}
+    {% if disallowed_create_message %}
+    {% bootstrap_alert disallowed_create_message 'info' %}
+    {%endif%}
     {% endif %}
 </div>
 {% if object_list|length > 0 %}

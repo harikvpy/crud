@@ -348,6 +348,7 @@ class CRUDView(PaginationMixin, ListView):
             'edit_item_custom_url': self.get_edit_item_custom_url(),
             'delete_item_custom_url': self.get_delete_item_custom_url(),
             'action_col_width': str(action_col_width)+'px',
+            'disallowed_create_message': self.get_disallowed_create_message(),
         }
         context.update(extra_context)
         return context

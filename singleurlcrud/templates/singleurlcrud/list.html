@@ -33,7 +33,7 @@ function deleteItemThunk(itemId) {
 }
 </script>
 <div class="form-group" style="margin-bottom: 5px;">
-    {% if enable_create %}
+    {% if allow_create %}
     <button id="addItem" type="button" class="btn btn-primary" title="{{ create_button_text }}" onclick="addNewItemThunk();">{{ create_button_text }}</button>
     {% endif %}
     {% if object_list|length > 0 and actions|length %}
@@ -54,7 +54,7 @@ function deleteItemThunk(itemId) {
         {% for name in list_display %}
         <th>{% if actions|length %}{% if forloop.first %}<input class="item-selection-checkbox-header" type="checkbox" id="id_select_all"></input>&nbsp;&nbsp;{% endif %}{% endif %}{% field_label view name %}</th>
         {% endfor %}
-        {% if enable_edit or enable_delete or item_actions|length %}
+        {% if allow_edit or allow_delete or item_actions|length %}
         <th width="{{ action_col_width }}">{% trans "Action" %}</th>
         {% endif %}
     </tr>

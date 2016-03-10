@@ -75,8 +75,8 @@ def render_item(context, item, rowindex):
     view = context['view']
     context['rowindex'] = rowindex
     context['item_actions'] = view.get_item_actions()
-    context['enable_edit'] = view.enable_edit
-    context['enable_delete'] = view.enable_delete
+    context['allow_edit'] = view.allow_edit
+    context['allow_delete'] = view.allow_delete
     context['item_deletable'] = view.item_deletable(item) and \
             not getattr(item, 'is_readonly', False)
     context['item_editable'] = view.item_editable(item) and \

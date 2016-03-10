@@ -3,7 +3,7 @@
     {% for field in view.list_display %}
         <td>{% if actions|length %}{% if forloop.first %}<input class="item-selection-checkbox" type="checkbox" id="id_select_{{ rowindex }}" data-pk="{{ object.pk }}"></input>&nbsp;&nbsp;{% endif %}{% endif %}{% eval_field view field object %}</td>
     {% endfor %}
-    {% if item_actions|length or enable_edit or enable_delete %}
+    {% if item_actions|length or allow_edit or allow_delete %}
     <td class="text-center">
         <div class="btn-group" role="group">
         {% for action in item_actions %}

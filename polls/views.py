@@ -16,7 +16,7 @@ class QuestionCRUDView(CRUDView):
     related_field_crud_urls = {
             'author': reverse_lazy("polls:authors")
             }
-    enable_multiple_item_delete = True
+    allow_multiple_item_delete = True
 
     '''
     def get_actions(self):

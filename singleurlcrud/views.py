@@ -77,16 +77,16 @@ class CRUDView(PaginationMixin, ListView):
             'admin/js/admin/RelatedObjectLookups.js' ]
     version = 1
     form_class = None
-    enable_create = True
-    enable_edit = True
-    enable_delete = True
+    allow_create = True
+    allow_edit = True
+    allow_delete = True
     context_object_name = 'object_list'
     pagetitle = None
     table_css_classes = 'table table-striped table-condensed table-bordered'
     action_col_width = None
     # labels for columns
     list_display_labels = {}
-    enable_multiple_item_delete = False
+    allow_multiple_item_delete = False
 
     # set this to a dictionary where each item is the CRUD url of
     # the related field, indexed by the field's name
@@ -294,9 +294,9 @@ class CRUDView(PaginationMixin, ListView):
             'breadcrumbs': self.get_breadcrumbs(),
             'media': self.media(),
             'item_name': self.get_model()._meta.verbose_name.title(),
-            'enable_create': self.enable_create,
-            'enable_edit': self.enable_edit,
-            'enable_delete': self.enable_delete,
+            'allow_create': self.get_allow_create(),
+            'allow_edit': self.get_allow_edit(),
+            'allow_delete': self.get_allow_delete(),
             'table_css_classes': self.table_css_classes,
             }
 
@@ -322,9 +322,9 @@ class CRUDView(PaginationMixin, ListView):
         action_col_width = self.action_col_width
         if not action_col_width:
             num_action_btns = 0;
-            if self.enable_edit:
+            if self.get_allow_edit():
                 num_action_btns += 1
-            if self.enable_delete:
+            if self.get_allow_delete():
                 num_action_btns += 1
             num_action_btns += len(self.get_item_actions())
             if num_action_btns > 2:
@@ -459,21 +459,21 @@ class CRUDView(PaginationMixin, ListView):
     def get(self, request, *args, **kwargs):
         try:
             if request.GET.get('o', '') == u'add':
-                if not self.enable_create or \
+                if not self.get_allow_create() or \
                         not self.check_permission('add', None, request):
                     raise Http404
             elif request.GET.get('o', '') == u'edit' and request.GET.get('item'):
                 item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
-                if not self.enable_edit or \
+                if not self.get_allow_edit() or \
                         not self.check_permission('edit', item, request):
                     raise Http404
             elif request.GET.get('o', '') == u'delete' and request.GET.get('item'):
                 item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
-                if not self.enable_delete or \
+                if not self.get_allow_delete() or \
                         not self.check_permission('delete', item, request):
                     raise Http404
             elif request.GET.get('o', '') == u'delete_multiple' and request.GET.get('items'):
-                if not self.enable_delete:
+                if not self.get_allow_delete():
                     raise Http404
                 items = self.request.GET.get("items")
                 objects = self.get_queryset().filter(pk__in=items.split(","))
@@ -501,7 +501,7 @@ class CRUDView(PaginationMixin, ListView):
 
     def post_add(self, request, *args, **kwargs):
         # add a new item
-        if not self.enable_create or \
+        if not self.get_allow_create() or \
                 not self.check_permission('add', None, request):
             raise Http404
         try:
@@ -544,7 +544,7 @@ class CRUDView(PaginationMixin, ListView):
         # edit
         try:
             item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
-            if not self.enable_edit or \
+            if not self.get_allow_edit() or \
                     not self.check_permission('edit', item, request):
                 raise Http404
             form = self.get_form(self.get_form_class(), instance=item, data=self.request.POST,
@@ -591,14 +591,14 @@ class CRUDView(PaginationMixin, ListView):
         # delete
         if request.GET.get('items'):
             item_ids = request.GET.get('items')
-            if not self.enable_delete:
+            if not self.get_allow_delete():
                 raise Http404
             objects = self.get_queryset().filter(pk__in=item_ids.split(","))
             objects.delete()
             msg = _('Selected %s have been deleted') % self.get_model()._meta.verbose_name_plural.title()
         else:
             item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
-            if not self.enable_delete or \
+            if not self.get_allow_delete() or \
                     not self.check_permission('delete', item, request):
                 raise Http404
             # verify global delete view flag and individual item deletable flag
@@ -667,7 +667,7 @@ class CRUDView(PaginationMixin, ListView):
         delete action, if it was enabled.
         '''
         actions = self.get_actions()
-        if self.enable_multiple_item_delete:
+        if self.get_allow_multiple_item_delete():
             actions.append((_('Delete'), self.__delete_multiple_items))
         return actions
 
@@ -693,6 +693,21 @@ class CRUDView(PaginationMixin, ListView):
         return title.capitalize()
 
     # OPTIONAL OVERRIDE
+    def get_allow_create(self):
+        return self.allow_create
+
+    def get_allow_edit(self):
+        return self.allow_edit
+
+    def get_allow_delete(self):
+        return self.allow_delete
+
+    def get_allow_multiple_item_delete(self):
+        return self.allow_multiple_item_delete
+
+    def get_disallowed_create_message(self):
+        return None
+
     def get_breadcrumbs(self):
         """
         Return a list of breadcrumb items, where each item in the list is

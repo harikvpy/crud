@@ -406,7 +406,7 @@ class CRUDView(PaginationMixin, ListView):
         '''Return context data for add opereation'''
         context = kwargs
         context['add'] = True
-        context['pagetitle'] = _("Create new %s") % (self.get_model()._meta.verbose_name.title())
+        context['pagetitle'] = _("New %s") % (self.get_model()._meta.verbose_name.title())
         if 'form' not in context:
             context['form'] = self._get_form_helper(self.get_form_class())
         if self.get_formset_class() and 'formset' not in context:

@@ -65,7 +65,7 @@ function deleteItemThunk(itemId) {
 </thead>
 <tbody>
 {% for object in object_list %}
-    {% render_item object forloop.counter0 %}
+    {% render_item object forloop.counter0 item_template %}
     {% if forloop.last %}
         <script type="text/javascript" charset="utf-8">
             totalItems = {{ forloop.counter }};

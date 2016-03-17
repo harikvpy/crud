@@ -66,11 +66,12 @@ def eval_field(view, field, obj):
     """
     return mark_safe(view.get_list_field_value(field, obj))
 
-@register.inclusion_tag("singleurlcrud/render_item.html", takes_context=True)
-def render_item(context, item, rowindex):
+@register.inclusion_tag("singleurlcrud/dummy_extends_template.html", takes_context=True)
+def render_item(context, item, rowindex, template):
     """
     Tag to render an object.
     """
+    context['item_template'] = template
     context['item'] = item
     view = context['view']
     context['rowindex'] = rowindex

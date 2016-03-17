@@ -158,6 +158,13 @@ class CRUDView(PaginationMixin, ListView):
     def get_delete_item_custom_url(self):
         return ''
 
+    def get_item_template(self):
+        '''
+        Filename of the template to be used for rendering each row
+        of the list view
+        '''
+        return 'singleurlcrud/render_item.html'
+
     def get_opless_path(self):
         """
         Returns the URL path without the 'o' and 'item' arguments.
@@ -289,6 +296,7 @@ class CRUDView(PaginationMixin, ListView):
         Context data for the template to render the CRUD view.
         """
         context = {
+            'item_template': self.get_item_template(),
             'view': self,
             'base_template': settings.SIMPLECRUD_BASE_TEMPLATE,
             'breadcrumbs': self.get_breadcrumbs(),

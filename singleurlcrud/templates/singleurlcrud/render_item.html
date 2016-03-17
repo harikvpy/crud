@@ -1,4 +1,6 @@
 {% load i18n crud_tags %}
+{% block preitemrow %}{% endblock preitemrow %}
+{% block itemrow %}
 <tr>
     {% for field in view.list_display %}
         <td>{% if actions|length %}{% if forloop.first %}<input class="item-selection-checkbox" type="checkbox" id="id_select_{{ rowindex }}" data-pk="{{ object.pk }}"></input>&nbsp;&nbsp;{% endif %}{% endif %}{% eval_field view field object %}</td>
@@ -13,12 +15,17 @@
         <div class="btn-group" role="group">
         {% if item_editable %}
         <button type="button" class="btn btn-success {{btn_class}}" title="{% trans 'Edit' %}" onclick="editItemThunk({{object.pk}});"><span class="glyphicon glyphicon-pencil"></span></a>
+        {% else %}
+        <button type="button" class="btn btn-success {{btn_class}} disabled" disabled title="{% trans 'Edit' %}" onclick="javascript:void(0);"><span class="glyphicon glyphicon-pencil"></span></a>
         {% endif %}
         {% if item_deletable %}
         <button type="button" class="btn btn-danger {{btn_class}}" title="{% trans 'Delete' %}" onclick="deleteItemThunk({{object.pk}}, '{{ object }}');"><span class="glyphicon glyphicon-trash"></span></a>
+        {% else %}
+        <button type="button" class="btn btn-danger {{btn_class}} disabled" disabled title="{% trans 'Delete' %}" onclick="javascript:void(0);"><span class="glyphicon glyphicon-trash"></span></a>
         {% endif %}
         </div>
     </td>
     {% endif %}
 </tr>
-
+{% endblock itemrow %}
+{% block postitemrow %}{% endblock postitemrow %}

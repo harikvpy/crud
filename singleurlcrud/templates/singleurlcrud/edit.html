@@ -2,48 +2,6 @@
 {% load i18n staticfiles bootstrap3 crud_tags %}
 {% block extrastyle %}
 {{ media }}
-{% if formset %}
-<script type="text/javascript" charset="utf-8">
-var itemCount = 0;
-var item_form_templ;
-var prefix = "{{formset.prefix}}";
-var item_control_id_prefix = "id_"+prefix+"-";
-/* adds a new formset item row at the end of the current item rows */
-function addNewItemForm() {
-    // append an empty form the end of the form table
-    var nForms = parseInt($("#"+item_control_id_prefix+"TOTAL_FORMS").val());
-    var empty_item_form = item_form_templ;
-    var re = new RegExp(prefix+"-X", "g");
-    empty_item_form = empty_item_form.replace(re, prefix+"-"+nForms);
-    $("#id_items_table tbody:last-child").append(empty_item_form);
-    $("#id_items_table tbody tr:last :input").not(":button :reset :hidden :checkbox :radio").val('');
-    $("#"+item_control_id_prefix+"TOTAL_FORMS").val(nForms+1);
-}
-$(document).ready(function() {
-    // change row color to red when the item delete checkbox is checked
-    $("div[id='delete-check'] input[type='checkbox']").change(function(element) {
-        if ($(element.target).prop("checked")) {
-            $(element.target).closest("tr").addClass("deleted");
-        } else {
-            $(element.target).closest("tr").removeClass("deleted");
-        }
-    });
-    // create the form row template and save it to a global variable that we 
-    // can use to add new forms
-    item_form_templ = $("#id_items_table tbody").children(":last").html();
-    var iLastRowIndex = parseInt($("#"+item_control_id_prefix+"TOTAL_FORMS").val())-1;
-    var re = new RegExp(prefix+"-"+iLastRowIndex, "g");
-    item_form_templ = "<tr>"+item_form_templ.replace(re, prefix+"-X")+"</tr>";
-});
-</script>
-<style type="text/css" media="screen">
-.headercontrols {
-    margin-top: -6px;
-} .deleted {
-    background: #ef4747;
-}
-</style>
-{% endif %}
 {% endblock %}
 {% block content %}
 <form id="formEdit" role="form" action="" method="post">
@@ -59,45 +17,51 @@ $(document).ready(function() {
     {% endif %}
     {% bootstrap_form form %}
     {% if formset %}
+    <div id="id_formset">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <div class="pull-right headercontrols">
-                <div class="form-inline">
-                    <a href="javascript:void(0);" onclick="addNewItemForm()" class="btn btn-default btn-sm" title="{% trans 'Add' %}">{% trans 'Add row' %}</a>
-                </div>
-            </div>
             <h4 class="panel-title">{{ formset.model|verbose_name_plural }}</h4>
         </div>
         <div class='panel-body'>
-            {{ formset.management_form.as_p }}
+            {{ formset.management_form }}
             {% bootstrap_formset_errors formset %}
             <table class="table table-condensed" id="id_items_table">
                 <thead>
                     {% for field in formset.forms.0 %}
                         {% if not field.is_hidden %}
+                            {% if not field.name == 'DELETE' %}
                             <th>{{ field.label }}</th>
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
                 </thead>
                 <tbody>
-                    {% for f in formset.forms %}
-                    <tr>
-                        {% for field in f %}
-                            {% if not field.is_hidden and not field.name = 'DELETE' %}
+                    {% for form in formset %}
+                    {% if form.non_field_errors %}
+                    {% comment %}
+                    We set colspan to an arbitrarily large number that can cover
+                    most use cases. And when colspan value exceeds the number of
+                    columns in the table row, browser automatically normalizes it
+                    to the max columns as defined in thead. Thus we get a 
+                    full row of error messages. 
+                    {% endcomment %}
+                    <tr><td colspan="15">{% bootstrap_form_errors form %}</td></tr>
+                    {% endif %}
+                    <tr class="formset-row {% if forloop.last %}empty-form{%endif%}"
+                         id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+                        {% for field in form %}
+                            {% if not field.is_hidden and not field.name == 'DELETE' %}
                                 <td>{% bootstrap_field field show_label=False %}</td>
-                            {% endif %}
-                            {% if field.name == 'DELETE' %}
-                            <td><div class="form-group" id="delete-check">{{ f.DELETE }}</div></td> 
+                            {% else %}
+                                <div style='display:none;'>{% bootstrap_field field show_label=False %}</div>
                             {% endif %}
                         {% endfor %}
                     </tr>
-                        {% if not forloop.last %}
-                        {{ f.id }}
-                        {% endif %}
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
     {% endif %}
     <div class="form-group">
@@ -105,5 +69,23 @@ $(document).ready(function() {
         <button id="idCancelEdit" type="button" class="btn btn-default" onclick="cancelEdit();">{% trans "Cancel" %}</button>
     </div>
 </form>
+{% if formset %}
+<script type="text/javascript">
+function onRowAddedThunk(row) {
+    if (typeof onRowAdded == "function") { onRowAdded(row); }
+}
+function onRowRemovedThunk(row) {
+    if (typeof onRowRemoved == "function") { onRowRemoved(row); }
+}
+(function($) {
+  $("#id_formset tbody tr").formset({
+    prefix: "{{ formset.prefix }}",
+    addText: "{% trans "Add another" %}",
+    deleteText: "{% trans 'Remove' %}",
+    added: onRowAddedThunk,
+    removed: onRowRemovedThunk,
+  });
+})(django.jQuery);
+</script>
+{% endif %}
 {% endblock content %}
-

@@ -74,6 +74,7 @@ class CRUDView(PaginationMixin, ListView):
     paginate_by = 20
     template_name = "singleurlcrud/list.html"
     js = [ 'singleurlcrud/js/crud-controller.js',
+            'singleurlcrud/js/jquery.formset.js',
             'admin/js/admin/RelatedObjectLookups.js' ]
     version = 1
     form_class = None

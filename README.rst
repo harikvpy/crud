@@ -83,13 +83,53 @@ That's it! You get a fully functional CRUD that will allow you to create,
 update and delete records from Question table, all rooted at the url
 ``yoursite.com/questions/``.
 
-Overview
---------
+# Overview
 
 TBD
 
-Reference
----------
+# Reference
+
+## Options
+CRUDView provides many options which allows customizing its behavior. These are
+documented below:
+
+### `template_name`
+Specifies the template that is used to render the list of items. This defaults to
+`singleurlcrud/list.html` and is rarely necessary to be customized.
+
+### `form_class`
+The form class to be use for create and update operations. This is optional and
+if not spefified, CRUD will create a form using `modelform_factory` using the
+fields specified in `form_fields` option. If `form_fields` is not spefified,
+CRUDView will try to use the fields in `list_display`.
+
+### `allow_create`
+A boolean value, this controls whether the create operation is allowed. 
+By default it is allowed, that is, this is set to True. 
+
+### `allow_edit`
+A boolean value, this controls whether the update operation is allowed. 
+By default it is allowed, that is, this is set to True. 
+
+### `allow_delete`
+A boolean value, this controls whether the delete operation is allowed. 
+By default it is allowed, that is, this is set to True. 
+
+### `context_object_name`
+The context variable name that will be set to the object list for the list view.
+Defaults to `object_list`. You only need to customize this if you have a custom
+template that want to use a different template variable name (for some reason).
+
+### `pagetitle`
+Title of the list view page.
+
+### `table_css_classes`
+CSS classes applied to the table in list view. Defaults to 
+`table table-striped table-condensed table-bordered`.
+
+## Overridable methods
+
+
 
 TBD
 

@@ -4,8 +4,7 @@ Django CRUD through a single view
 
 A single view implementation of table CRUD operations for Django.
 
-Introduction
-------------
+# Introduction
 
 Django comes with an excellent admin framework that provides a sophisticated 
 interface for table CRUD operations. However, the admin framework is closely 
@@ -27,8 +26,7 @@ django view that provides basic table CRUD operations. You derive from this
 view providing it with the appropriate initialization parameters and then hook 
 it up to the url namespace yourself explicitly.
 
-Installation
-------------
+# Installation
 
 1. Easiest way to install crud is to get it from PyPi using pip. Do this by:: 
 
@@ -42,14 +40,12 @@ Installation
         ...
         )
 
-Dependencies
-------------
+# Dependencies
 
   * django-bootstrap3
   * django-pure-pagination
 
-Quickstart
-----------
+# Quickstart
 
 Consider the following model (taken from 'polls' app, which is bundled with the 
 crud source code)::
@@ -146,6 +142,94 @@ Note that the view urls for the foreign key field models should also be
 implemented using CRUDView for this to work.
 
 ## Overridable methods
+Like options, CRUDView also provides many methods that can be overridden by the
+client class to customize the CRUD behavior. Many of these methods are simple
+wrappers around class variables, provided to allow dynamic values to be 
+returned for the relevant options.
+
+### `get_form_class()`
+Returns the form class that will be instantiated for create and update 
+operations. By default returns the value of `form_class` option, if it's 
+defined. If `form_class` is not defined, a `ModelForm` class for the model with
+fields set to either of the value of `form_fields` or `list_display` will be
+returned.
+
+### `get_form(form_class, **kwargs)`
+Returns the form object to be used for create and update operations. 
+`form_class` will be set to the return value of `get_form_class`. `**kwargs` 
+will contain additional arguments, such as form initial data for the update
+operation of CRUD, that are to be passed to the form constructor.
+
+### `get_form_fields()`
+Return a tuple, that lists the fields of form used in create and update 
+operations. Note that this method will only be called if a `form_class` is not
+specified and `get_form()` is not overridden.
+
+### `get_formset_class()`
+
+### `get_formset(formset_class, **kwargs)`
+
+### `get_related_field_crud_urls()`
+Wrapper around the class option `related_field_crud_urls`.
+
+### `get_add_item_custom_url()`
+Return a custom url, presumably with its own view that you write, that you want 
+to use for the create operation.
+
+### `get_edit_item_custom_url()`
+Return a custom url, presumably with its own view that you write, that you want 
+to use for the update operation.
+
+### `get_delete_item_custom_url()`
+Return a custom url, presumably with its own view that you write, that you want 
+to use for the delete operation.
+
+### `get_item_template(self)`
+
+### `get_pagetitle()`
+
+### `get_allow_create()`
+
+### `get_allow_edit()`
+
+### `get_allow_delete()`
+
+### `get_allow_multiple_item_delete()`
+
+### `get_disallowed_create_message()`
+
+### `get_breadcrumbs()`
+
+### `get_actions()`
+Return a list of tuples where each tuple consists of `(label, handler,)` where
+`label` will be displayed in the action dropdown and `handler` is a method
+in the derived class that is to be invoked when the user selects the action.
+
+### `get_item_actions()`
+Return a list of ItemAction derived objects that represent the additional item 
+specific action to be invoked for each item in the itemlist. When the action is
+selected, the corresponding ItemAction object's `doAction()` method will be 
+invoked. ItemAction has the following prototype:
+
+```
+    class ItemAction(object):
+        title = ''
+        key = ''
+        css = ''
+
+        def doAction(self, item):
+            pass
+```
+
+### `item_deletable(object)`
+Return a boolean to indicate if the object can be deleted. True is returned
+by default. If False is returned for any object, the delete option for that
+item will be disabled.
+
+### `item_editable(object)`
+Same as `item_deletable`, but works for updating an item.
+
+
 
 TBD
 

@@ -127,9 +127,25 @@ Title of the list view page.
 CSS classes applied to the table in list view. Defaults to 
 `table table-striped table-condensed table-bordered`.
 
+### `list_display_labels`
+A dictionary that contains the labels to be used for each column in the list 
+view. If not specified, column names will default to the field name specified
+in `list_display`. For callable column entries, attribute value
+`<callable>.short_description` is used as the column title.
+
+### `allow_multiple_item_delete`
+A boolean value, this controls whether multiple item deletion is allowed. 
+Multiple item deletion is implemented using a checkbox against each item row
+and then selecting a dropdopwn menu item at the top. Set to `False` by default.
+
+### `related_field_crud_urls`
+A dictionary that has the CRUD url for each foreign key field of the model for
+which create and update operation through a popup window is to be enabled.
+
+Note that the view urls for the foreign key field models should also be 
+implemented using CRUDView for this to work.
+
 ## Overridable methods
-
-
 
 TBD
 

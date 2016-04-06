@@ -189,12 +189,16 @@ to use for the delete operation.
 ### `get_pagetitle()`
 
 ### `get_allow_create()`
+Wrapper for `allow_create` class option.
 
 ### `get_allow_edit()`
+Wrapper for `allow_edit` class option.
 
 ### `get_allow_delete()`
+Wrapper for `allow_delete` class option.
 
 ### `get_allow_multiple_item_delete()`
+Wrapper for `allow_multiple_item_delete` class option.
 
 ### `get_disallowed_create_message()`
 

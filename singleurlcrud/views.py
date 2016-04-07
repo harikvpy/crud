@@ -123,12 +123,13 @@ class CRUDView(PaginationMixin, ListView):
         from django.forms.models import modelform_factory
         return modelform_factory(self.get_model(), fields=self.get_form_fields())
 
-    def get_related_field_crud_urls(self):
+    def get_form_fields(self):
         """
-        Return the related field CRUD urls for inline related field add/edit
-        popups.
+        Return a tuple of field names that are to be displayed for the CRUD form.
         """
-        return {}
+        if hasattr(self, 'form_fields'):
+            return self.form_fields
+        return self.list_display
 
     def get_form(self, form_class, **kwargs):
         """
@@ -142,13 +143,12 @@ class CRUDView(PaginationMixin, ListView):
     def get_formset(self, formset_class, **kwargs):
         return formset_class(**kwargs)
 
-    def get_form_fields(self):
+    def get_related_field_crud_urls(self):
         """
-        Return a tuple of field names that are to be displayed for the CRUD form.
+        Return the related field CRUD urls for inline related field add/edit
+        popups.
         """
-        if hasattr(self, 'form_fields'):
-            return self.form_fields
-        return self.list_display
+        return {}
 
     def get_add_item_custom_url(self):
         return ''

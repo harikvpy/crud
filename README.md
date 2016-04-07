@@ -32,15 +32,17 @@ hook it up to the url namespace yourself explicitly.
 
 1. Easiest way to install crud is to get it from PyPi using pip. Do this by:: 
 
-    pip install singleurlcrud
+    `pip install singleurlcrud`
 
 2. Add it to INSTALLED_APPS in projects ``settings.py``::
 
+    ```
     INSTALLED_APPS = (
         ...
         'singleurlcrud',
         ...
         )
+    ```
 
 # Dependencies
 
@@ -52,38 +54,40 @@ hook it up to the url namespace yourself explicitly.
 Consider the following model (taken from 'polls' app, which is bundled with the 
 crud source code)::
 
+    ```
     from django.db import models
 
     class Question(models.Model):
         question_text = models.CharField(max_length=200)
         pub_date = models.DateTimeField('Date published')
         author = models.ForeignKey(Author, null=True, default=None)
+    ```
 
 To get a fully functional CRUD for this table, declare a view like below::
 
+    ```
     from singleurlcrud.views import CRUDView
     from .models import Question
 
     QuestionCRUDView(CRUDView):
         model = Question
         list_display = ('question_text', 'pub_date', 'author')
+    ```
 
 Thereafter, hook this view to the desired url through urls.py::
 
+    ```
     from django.conf.urls import url
     from .views import *
 
     urlpatterns = [
             url(r'^questions/$', QuestionCRUDView.as_view(), name='questions')
             ]
+    ```
 
 That's it! You get a fully functional CRUD that will allow you to create,
-update and delete records from Question table, all rooted at the url
-``yoursite.com/questions/``.
-
-# Overview
-
-TBD
+update and delete records from Question table, all rooted at 
+`yoursite.com/questions/`.
 
 # Reference
 

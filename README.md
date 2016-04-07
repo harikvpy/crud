@@ -234,7 +234,7 @@ When such logic is determined dyanamically and the creation operation is
 disallowed, you can display an alert message when the table CRUD is activated.
 
 This method allows you to specify the custom message that will be displayed on
-the top of the list view (where the Create New.. button would've been) 
+top of the list view (where the Create New.. button would've been) 
 informing the user that row creation is disallowed.
 
 ### `get_breadcrumbs()`

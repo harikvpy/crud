@@ -31,6 +31,8 @@
                         {% if not field.is_hidden %}
                             {% if not field.name == 'DELETE' %}
                             <th>{{ field.label }}</th>
+                            {% else %}
+                            <th>{% trans "Remove" %}</th>
                             {% endif %}
                         {% endif %}
                     {% endfor %}
@@ -50,7 +52,7 @@
                     <tr class="formset-row {% if forloop.last %}empty-form{%endif%}"
                          id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
                         {% for field in form %}
-                            {% if not field.is_hidden and not field.name == 'DELETE' %}
+                            {% if not field.is_hidden %}
                                 <td>{% bootstrap_field field show_label=False %}</td>
                             {% else %}
                                 <div style='display:none;'>{% bootstrap_field field show_label=False %}</div>
@@ -81,7 +83,7 @@ function onRowRemovedThunk(row) {
   $("#id_formset tbody tr").formset({
     prefix: "{{ formset.prefix }}",
     addText: "{% trans "Add another" %}",
-    deleteText: "{% trans 'Remove' %}",
+    deleteText: "<span class='glyphicon glyphicon-trash' alt='{% trans "Remove" %}'></span>",
     added: onRowAddedThunk,
     removed: onRowRemovedThunk,
   });

@@ -85,6 +85,12 @@ update and delete records from Question table, all rooted at
 `yoursite.com/questions/`.
 
 # Usage examples
+This section documents the various common use case scenarios and how to 
+implement them using the CRUDView.
+
+## Custom multi-item actions
+
+## Custom per-item actions
 
 ## Editing child models using formset
 Singleurlcrud supports editing child table rows using the Django FormSet

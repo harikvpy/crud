@@ -87,6 +87,30 @@ update and delete records from Question table, all rooted at
 # Usage examples
 
 ## Editing child models using formset
+Singleurlcrud supports editing child table rows using the Django FormSet
+mechanism. To facilitate this, override `get_formset_class()` method in your
+CRUDView derived class and return the `inline_formset` for the child model from
+this method. 
+
+For our example project, `polls`, `Author` table's CRUD view is a good candidate
+to introduce inline formset editing as one author can create many questions
+and therefore the models are related by a foreign key. In order to this we just
+have to override `get_formset_class()` as below:
+
+```
+def get_formset_class(self):
+    return inlineformset_factory(
+            Author,
+            Question,
+            fields=['question_text', 'pub_date'],
+            can_delete=True,
+            extra=1)
+
+```
+Note that here we're not using any custom forms and are leaving all the work to
+the excelleng inlineformset_factory(). It builds a formset with individual
+forms for each child model instance and an extra form for entering new child
+model instance.
 
 # Reference
 

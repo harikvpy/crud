@@ -259,13 +259,13 @@ selected, the corresponding ItemAction object's `doAction()` method will be
 invoked. ItemAction has the following prototype:
 
 ```
-    class ItemAction(object):
-        title = ''
-        key = ''
-        css = ''
+class ItemAction(object):
+    title = ''
+    key = ''
+    css = ''
 
-        def doAction(self, item):
-            pass
+    def doAction(self, item):
+        pass
 ```
 
 ### `item_deletable(object)`

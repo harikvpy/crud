@@ -49,8 +49,8 @@ hook it up to the url namespace yourself explicitly.
 
 # Quickstart
 
-Consider the following model (taken from 'polls' app, which is bundled with the 
-crud source code)::
+Consider the following model (taken from `polls` app, which is bundled with the 
+source code):
 
     ```
     from django.db import models
@@ -61,7 +61,7 @@ crud source code)::
         author = models.ForeignKey(Author, null=True, default=None)
     ```
 
-To get a fully functional CRUD for this table, declare a view like below::
+To get a fully functional CRUD for this table, declare a view like below:
 
     ```
     from singleurlcrud.views import CRUDView
@@ -72,7 +72,7 @@ To get a fully functional CRUD for this table, declare a view like below::
         list_display = ('question_text', 'pub_date', 'author')
     ```
 
-Thereafter, hook this view to the desired url through urls.py::
+Thereafter, hook this view to the desired url through urls.py:
 
     ```
     from django.conf.urls import url

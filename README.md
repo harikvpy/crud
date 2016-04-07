@@ -51,7 +51,6 @@ hook it up to the url namespace yourself explicitly.
 
 Consider the following model (taken from `polls` app, which is bundled with the 
 source code):
-
     ```
     from django.db import models
 
@@ -62,7 +61,6 @@ source code):
     ```
 
 To get a fully functional CRUD for this table, declare a view like below:
-
     ```
     from singleurlcrud.views import CRUDView
     from .models import Question
@@ -73,7 +71,6 @@ To get a fully functional CRUD for this table, declare a view like below:
     ```
 
 Thereafter, hook this view to the desired url through urls.py:
-
     ```
     from django.conf.urls import url
     from .views import *
@@ -82,7 +79,6 @@ Thereafter, hook this view to the desired url through urls.py:
             url(r'^questions/$', QuestionCRUDView.as_view(), name='questions')
             ]
     ```
-
 That's it! You get a fully functional CRUD that will allow you to create,
 update and delete records from Question table, all rooted at 
 `yoursite.com/questions/`.

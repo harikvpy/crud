@@ -39,7 +39,7 @@ practice at least for the foreseeable future.
                 a popup window. Capability only works for ForeignKey field.
                 ManyToManyField field implementation is pending.
 """
-from datetime import datetime
+from datetime import datetime, date
 
 from django.db import models, transaction, IntegrityError
 from django.shortcuts import render, get_object_or_404
@@ -59,10 +59,44 @@ try:
 except ImportError:
     from django.contrib.admin.utils import display_for_field, display_for_value
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, ImproperlyConfigured
+from django.utils.safestring import mark_safe
 
 from pure_pagination.mixins import PaginationMixin
 
 from singleurlcrud.widgets import CustomRelatedFieldWidgetWrapper
+
+class ValueFormatter(object):
+    '''Class to format list view colum values based on their types.'''
+    def format(self, value):
+        return value
+
+
+class BooleanValueFormatter(ValueFormatter):
+    '''Formatter for boolean values'''
+    def format(self, value):
+        if value:
+            status = '<i class="glyphicon glyphicon-ok btn-xs btn-success"></i>'
+        else:
+            status = '<i class="glyphicon glyphicon-remove btn-xs btn-danger"></i>'
+        return mark_safe(status)
+
+
+class DatetimeValueFormatter(ValueFormatter):
+    def format(self, value):
+        return formats.date_format(value, "SHORT_DATETIME_FORMAT")
+
+
+class DateValueFormatter(ValueFormatter):
+    def format(self, value):
+        return formats.date_format(value, "SHORT_DATE_FORMAT")
+
+
+STANDARD_FORMATTERS = {
+        bool: BooleanValueFormatter,
+        date: DateValueFormatter,
+        datetime: DatetimeValueFormatter
+        }
+
 
 class CRUDView(PaginationMixin, ListView):
     """
@@ -113,6 +147,11 @@ class CRUDView(PaginationMixin, ListView):
             if hasattr(form, 'media'):
                 media += form.media
         return media
+
+    def __init__(self, *args, **kwargs):
+        super(CRUDView, self).__init__(*args, **kwargs)
+        self.value_formatters = STANDARD_FORMATTERS
+        self.value_formatters.update(self.get_formatters())
 
     def get_form_class(self):
         '''
@@ -222,9 +261,13 @@ class CRUDView(PaginationMixin, ListView):
                 raise models.FieldDoesNotExist("Could not evaluate column '"+name+"'")
             if type(value) != type(True):
                 value = mark_safe(value)
+        '''
         if type(value) == datetime:
             value = formats.date_format(value, "SHORT_DATETIME_FORMAT")
-        return value
+        if type(value) == bool:
+            return BooleanValueFormatter().format(value)
+        '''
+        return self.format_value(value)
 
     def label_for_field(self, name):
         """
@@ -691,6 +734,15 @@ class CRUDView(PaginationMixin, ListView):
         a request argument.
         '''
         pass
+
+    def get_formatters(self):
+        '''Override to return custom formatters for known types here.'''
+        return {}
+
+    def format_value(self, value):
+        if type(value) in self.value_formatters:
+            return self.value_formatters[type(value)]().format(value)
+        return value
 
     # ###############################################################
     # METHODS THAT WILL TYPICALLY BE OVERRIDDEN BY THE DERIVED CLASS

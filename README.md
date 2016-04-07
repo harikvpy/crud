@@ -84,6 +84,10 @@ That's it! You get a fully functional CRUD that will allow you to create,
 update and delete records from Question table, all rooted at 
 `yoursite.com/questions/`.
 
+# Usage examples
+
+## Editing child models using formset
+
 # Reference
 
 ## Options
@@ -169,17 +173,15 @@ specified and `get_form()` is not overridden.
 ### `get_formset_class()`
 CRUDView supports editing of child models using a formset. To activate this 
 feature, override this method and return the formset class to be used for inline
-editing of the child model instances. Note that the returned class should be
-a subclass of BaseModelFormSet.
+editing of the child model instances. 
 
-Typically one can use the django factory method `modelformset_factory()` to 
-create this class.
+Typically one can use one of the django factory methods `inlineformset_factory`
+or `modelformset_factory()` to create this class.
 
 By default this method returns `None` which disables child model editing.
 
 ### `get_formset(formset_class, **kwargs)`
-Return the `BaseModelFormSet` derived class instance to be used for editing 
-child model instances.
+Return the formset class instance to be used for editing child model instances.
 
 ### `get_related_field_crud_urls()`
 Wrapper around the class option `related_field_crud_urls`. By default returns

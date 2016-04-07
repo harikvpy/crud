@@ -35,7 +35,6 @@ hook it up to the url namespace yourself explicitly.
     `pip install singleurlcrud`
 
 2. Add it to INSTALLED_APPS in projects ``settings.py``::
-
     ```
     INSTALLED_APPS = (
         ...
@@ -43,7 +42,6 @@ hook it up to the url namespace yourself explicitly.
         ...
         )
     ```
-
 # Dependencies
 
   * django-bootstrap3

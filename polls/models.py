@@ -6,6 +6,7 @@ from django.utils import timezone
 # Create your models here.
 class Author(models.Model):
     name = models.CharField(max_length=64)
+    email = models.EmailField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -15,6 +16,10 @@ class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
     author = models.ForeignKey(Author, null=True, default=None)
+
+    class Meta:
+        verbose_name = "Question"
+        verbose_name_plural = "Questions"
 
     def __unicode__(self):
         return self.question_text

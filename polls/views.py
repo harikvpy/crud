@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
+from django.forms.models import inlineformset_factory
 
 from singleurlcrud.views import CRUDView
 from .models import *
@@ -8,7 +9,15 @@ from .models import *
 # Create your views here.
 class AuthorCRUDView(CRUDView):
     model = Author
-    list_display = ('name',)
+    list_display = ('name', 'email')
+
+    def get_formset_class(self):
+        return inlineformset_factory(
+                Author,
+                Question,
+                fields=['question_text', 'pub_date'],
+                can_delete=True,
+                extra=1)
 
 class QuestionCRUDView(CRUDView):
     model = Question

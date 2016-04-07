@@ -1,8 +1,10 @@
-=================================
 Django CRUD through a single view
 =================================
 
-A single view implementation of table CRUD operations for Django.
+A single view implementation of table CRUD operations for Django. Single view 
+means single URL to be registered in URL namespace. All CRUD operations are
+invoked with the same URL but with URL arguments to distinguish them. This allows
+less crowded and a simpler URL namespace.
 
 # Introduction
 
@@ -22,9 +24,9 @@ upgraded, you have the job of reviewing the new admin interface to make sure
 that it did not introduce any new 'holes' into your url namespace.
 
 This project is aimed at addressing the above shortcomings by developing a pure 
-django view that provides basic table CRUD operations. You derive from this 
-view providing it with the appropriate initialization parameters and then hook 
-it up to the url namespace yourself explicitly.
+django view that provides basic table CRUD operations. To use, derive from this 
+view class providing it with the appropriate initialization parameters and then 
+hook it up to the url namespace yourself explicitly.
 
 # Installation
 
@@ -166,43 +168,85 @@ operations. Note that this method will only be called if a `form_class` is not
 specified and `get_form()` is not overridden.
 
 ### `get_formset_class()`
+CRUDView supports editing of child models using a formset. To activate this 
+feature, override this method and return the formset class to be used for inline
+editing of the child model instances. Note that the returned class should be
+a subclass of BaseModelFormSet.
+
+Typically one can use the django factory method `modelformset_factory()` to 
+create this class.
+
+By default this method returns `None` which disables child model editing.
 
 ### `get_formset(formset_class, **kwargs)`
+Return the `BaseModelFormSet` derived class instance to be used for editing 
+child model instances.
 
 ### `get_related_field_crud_urls()`
-Wrapper around the class option `related_field_crud_urls`.
+Wrapper around the class option `related_field_crud_urls`. By default returns
+the value assigned to option variable `related_field_curd_urls`.
 
 ### `get_add_item_custom_url()`
 Return a custom url, presumably with its own view that you write, that you want 
-to use for the create operation.
+to use for the create operation. By default returns `None`.
 
 ### `get_edit_item_custom_url()`
 Return a custom url, presumably with its own view that you write, that you want 
-to use for the update operation.
+to use for the update operation. By default returns `None`.
 
 ### `get_delete_item_custom_url()`
 Return a custom url, presumably with its own view that you write, that you want 
-to use for the delete operation.
+to use for the delete operation. By default returns `None`.
 
 ### `get_item_template(self)`
+Returns the template used to render each item in list view. Template returned 
+by this method is used to render each row of the model in list view. You can 
+override this to customize per item rendering.
+
+For example, by default each row of the table is given on table row. But for 
+your model, you might want to render additional rows listing the child model
+instances associated with the model row. You can acheive this by overriding this
+method to return a custom template.
 
 ### `get_pagetitle()`
+Wrapper for `pagetitle` class options variable.
 
 ### `get_allow_create()`
-Wrapper for `allow_create` class option.
+Wrapper for `allow_create` class option. Method allows for determining this
+value during runtime rather than static definition in the code.
 
 ### `get_allow_edit()`
-Wrapper for `allow_edit` class option.
+Wrapper for `allow_edit` class option.  Method allows for determining this
+value during runtime rather than static definition in the code.
 
 ### `get_allow_delete()`
-Wrapper for `allow_delete` class option.
+Wrapper for `allow_delete` class option. Method allows for determining this
+value during runtime rather than static definition in the code.
 
 ### `get_allow_multiple_item_delete()`
-Wrapper for `allow_multiple_item_delete` class option.
+Wrapper for `allow_multiple_item_delete` class option. Method allows for determining this
+value during runtime rather than static definition in the code.
 
 ### `get_disallowed_create_message()`
+Often times you might want to control the number of rows that a user can
+create on a table. Or you might want to limit row creation based on user roles.
+When such logic is determined dyanamically and the creation operation is 
+disallowed, you can display an alert message when the table CRUD is activated.
+
+This method allows you to specify the custom message that will be displayed on
+the top of the list view (where the Create New.. button would've been) 
+informing the user that row creation is disallowed.
 
 ### `get_breadcrumbs()`
+If your site supports breadcrumbs, override this method to return a list of
+breadcrumbs that depicts the navigation path to the CRUD url. Each item of
+this list is a 2-tuple of the form `(text, url)` where `text` is to be added to
+the breadcrumbs hyperlinking it to `url`.
+
+Breadcrumbs returned from this method are passed to the context through the 
+context variable `breadcrumbs`. Ideally, your project's base template should 
+handle this list by rendering each item in the list as an appropriately
+styled `<li>` or something similar.
 
 ### `get_actions()`
 Return a list of tuples where each tuple consists of `(label, handler,)` where
@@ -226,16 +270,15 @@ invoked. ItemAction has the following prototype:
 ```
 
 ### `item_deletable(object)`
-Return a boolean to indicate if the object can be deleted. True is returned
-by default. If False is returned for any object, the delete option for that
-item will be disabled.
+Return a boolean to indicate if the object can be deleted. By default, True is 
+returned by the base class.  If False is returned for any object, the delete 
+option for that item will be disabled.
+
+This method, alongwith `item_editable` below, allows controlling per item delete
+and edit operations based on the row or some other dynamic property.
 
 ### `item_editable(object)`
-Same as `item_deletable`, but works for updating an item.
-
-
-
-TBD
+Same as `item_deletable` above, but works for updating an item.
 
 License
 -------

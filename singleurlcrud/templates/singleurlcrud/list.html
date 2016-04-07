@@ -35,6 +35,10 @@ function deleteItemThunk(itemId) {
 <div class="form-group" style="margin-bottom: 5px;">
     {% if allow_create %}
     <button id="addItem" type="button" class="btn btn-primary" title="{{ create_button_text }}" onclick="addNewItemThunk();">{{ create_button_text }}</button>
+    {% else %}
+    {% if disallowed_create_message %}
+    {% bootstrap_alert disallowed_create_message 'info' %}
+    {%endif%}
     {% endif %}
     {% if object_list|length > 0 and actions|length %}
     <div class="btn-group" id="id_action_dropdown">
@@ -45,10 +49,6 @@ function deleteItemThunk(itemId) {
             {% endfor %}
         </ul>
     </div>
-    {% else %}
-    {% if disallowed_create_message %}
-    {% bootstrap_alert disallowed_create_message 'info' %}
-    {%endif%}
     {% endif %}
 </div>
 {% if object_list|length > 0 %}

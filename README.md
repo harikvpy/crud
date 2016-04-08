@@ -131,7 +131,36 @@ class MyTableCRUDView(CRUDView):
 ```
 
 ## Custom per-row actions
+Per row custom actions are supported through the callback `get_item_actions()`.
+The return value from this method is a list of objects, one for each action,
+of the prototype ItemAction. When user selects the action, the corresponding
+ItemAction object's doAction() method is invoked. This method is given the
+selected row as an argument.
 
+ItemAction object has three class variables that need to initialized:
+
+    | Variable | Purpose                                      |
+    +----------+----------------------------------------------|
+    | title    | The `alt' text displayed for the action icon |
+    | key      | A unique string (amongst other actions) to   |
+    |          | identify this action.                        |
+    | css      | CSS class for the icon <i> element for this  |
+    |          | action.
+
+The following code example should make the options above clearer:
+```
+class MyTableCRUD(CRUDView):
+
+    class VoteAction(CRUDView.ItemAction):
+        '''Per item custom action definition'''
+       title = _('Mark as done')
+       key = 'mark_as_done'
+       css = 'glyphicon glyphicon-ok'
+
+        def doAction(self, obj):
+            obj.mark_as_done()
+
+```
 ## Editing child models using formset
 Singleurlcrud supports editing child table rows using the Django FormSet
 mechanism. To facilitate this, override `get_formset_class()` method in your

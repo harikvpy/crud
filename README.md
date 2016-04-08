@@ -138,20 +138,24 @@ mechanism. To facilitate this, override `get_formset_class()` method in your
 CRUDView derived class and return the `inline_formset` for the child model from
 this method. 
 
-For our example project, `polls`, `Author` table's CRUD view is a good candidate
+For our example project, `polls`, Author table's CRUD view is a good candidate
 to introduce inline formset editing as one author can create many questions
-and therefore the models are related by a foreign key. In order to this we just
-have to override `get_formset_class()` as below:
+and therefore the models are related by a foreign key. In order to achieve this 
+we just have to override `get_formset_class()` as below:
 
 ```
-def get_formset_class(self):
-    return inlineformset_factory(
-            Author,
-            Question,
-            fields=['question_text', 'pub_date'],
-            can_delete=True,
-            extra=1)
+class AuthorCRUDView(CRUDView):
+    '''Author table CRUD'''
+    model = Author
+    list_display = ('name', 'email')
 
+    def get_formset_class(self):
+        return inlineformset_factory(
+                Author,     # parent model
+                Question,   # child model
+                fields=['question_text', 'pub_date'], # fields for inline edit
+                can_delete=True,    # can rows be deleted?
+                extra=1)    # number of extra forms for adding new child entries
 ```
 Note that here we're not using any custom forms and are leaving all the work to
 the excelleng inlineformset_factory(). It builds a formset with individual

@@ -93,7 +93,7 @@ To enable action on a group of selected rows, override `get_actions()` method
 and return from it a list of 2-tuples where each tuple is of the form `(label,
 handler,)`. Label is the label that will be displayed on the Actions drop down
 menu and handler is the derived class method that will be invoked when user
-selects the correction action item.
+selects the corresponding action item.
 
 Handler method should be of the format
 ```
@@ -127,8 +127,8 @@ class MyTableCRUDView(CRUDView):
     def mark_as_done(self, request, qs):
         for obj in qs:
             obj.mark_as_done()
-        return None # can be omitted for implicit `return None`
-'''
+        return None # can be omitted for implicit return None
+```
 
 ## Custom per-row actions
 

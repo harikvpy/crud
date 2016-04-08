@@ -140,7 +140,7 @@ selected row as an argument.
 ItemAction object has three class variables that need to initialized:
 
     | Variable | Purpose                                      |
-    +----------+----------------------------------------------|
+    | -------- | -------------------------------------------- |
     | title    | The `alt' text displayed for the action icon |
     | key      | A unique string (amongst other actions) to   |
     |          | identify this action.                        |

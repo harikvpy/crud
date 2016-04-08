@@ -88,9 +88,49 @@ update and delete records from Question table, all rooted at
 This section documents the various common use case scenarios and how to 
 implement them using the CRUDView.
 
-## Custom multi-item actions
+## Custom multi-row actions
+To enable action on a group of selected rows, override `get_actions()` method
+and return from it a list of 2-tuples where each tuple is of the form `(label,
+handler,)`. Label is the label that will be displayed on the Actions drop down
+menu and handler is the derived class method that will be invoked when user
+selects the correction action item.
 
-## Custom per-item actions
+Handler method should be of the format
+```
+def action_handler(self, request, qs):
+    '''
+        Parameters:
+            request - the HttpRequest object
+            qs - queryset containing the selected rows upon which the action
+                 is to be performed.
+
+        Return:
+            None - for view to refresh itself
+            HttpResponse - to explicitly return a response object
+    '''
+    # do some action
+
+```
+Note that actions dropdown menu button (placed next to `Create New..` button) 
+will only be shown when there is at least one multi-row action item defined.
+
+To illustrate with an example:
+```
+class MyTableCRUDView(CRUDView):
+    ...
+    ...
+    def get_actions(self):
+        return [
+                (_('Mark as done'), mark_as_done, ),
+                ]
+    
+    def mark_as_done(self, request, qs):
+        for obj in qs:
+            obj.mark_as_done()
+        return None # can be omitted for implicit `return None`
+'''
+
+## Custom per-row actions
 
 ## Editing child models using formset
 Singleurlcrud supports editing child table rows using the Django FormSet

@@ -744,6 +744,24 @@ class CRUDView(PaginationMixin, ListView):
             return self.value_formatters[type(value)]().format(value)
         return value
 
+    def return_as_href(self, label, urlname, **kwargs):
+        '''
+        A helper that derived classes can use to return a URL href from a
+        method that is a list_display column.
+
+        Parameters:
+            label - the label that will be the href
+            urlname - the url name that will the resolved using reverse()
+            kwargs - additional arguments to be passed to the
+                     urlresolvers.reverse()
+
+        Returns:
+            A well formed anchor element of the form
+            <a href="reverse(urlname, kwargs=kwargs)">label<a>
+        '''
+        return "<a href='%s'>%s</a>" % (reverse(urlname, kwargs=kwargs),
+                label)
+
     # ###############################################################
     # METHODS THAT WILL TYPICALLY BE OVERRIDDEN BY THE DERIVED CLASS
     # ###############################################################

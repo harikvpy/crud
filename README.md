@@ -382,6 +382,17 @@ and edit operations based on the row or some other dynamic property.
 ### `item_editable(object)`
 Same as `item_deletable` above, but works for updating an item.
 
+## Helper methods
+### `return_as_href(label, urlname, kwargs)`
+This helper method return a well formed anchor element composed of its three
+arguments of the form:
+```
+    <a href="reverse(urlname, kwargs=kwargs)">label<a>
+```
+This helper can be used to conveniently return an anchor element from a method
+that is listed as one of the columns in list view.
+
+
 License
 -------
 

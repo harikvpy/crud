@@ -254,7 +254,7 @@ class CRUDView(PaginationMixin, ListView):
         except models.FieldDoesNotExist:
             from django.utils.safestring import mark_safe
             if hasattr(self.get_model(), name):
-                value = getattr(self.get_model(), name)(obj)
+                value = getattr(obj, name)
             elif hasattr(self, name):
                 value = getattr(self, name)(obj)
             else:
@@ -518,11 +518,13 @@ class CRUDView(PaginationMixin, ListView):
             elif request.GET.get('o', '') == u'edit' and request.GET.get('item'):
                 item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
                 if not self.get_allow_edit() or \
+                        not self.item_editable(item) or \
                         not self.check_permission('edit', item, request):
                     raise Http404
             elif request.GET.get('o', '') == u'delete' and request.GET.get('item'):
                 item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
                 if not self.get_allow_delete() or \
+                        not self.item_deletable(item) or \
                         not self.check_permission('delete', item, request):
                     raise Http404
             elif request.GET.get('o', '') == u'delete_multiple' and request.GET.get('items'):

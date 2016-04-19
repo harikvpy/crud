@@ -600,6 +600,7 @@ class CRUDView(PaginationMixin, ListView):
         try:
             item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
             if not self.get_allow_edit() or \
+                    not self.item_editable(item) or \
                     not self.check_permission('edit', item, request):
                 raise Http404
             form = self.get_form(self.get_form_class(), instance=item, data=self.request.POST,

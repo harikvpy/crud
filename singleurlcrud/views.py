@@ -58,7 +58,8 @@ try:
     from django.contrib.admin.util import display_for_field, display_for_value
 except ImportError:
     from django.contrib.admin.utils import display_for_field, display_for_value
-from django.core.exceptions import ObjectDoesNotExist, ValidationError, ImproperlyConfigured
+from django.core.exceptions import ObjectDoesNotExist, ValidationError, \
+        ImproperlyConfigured, PermissionDenied
 from django.utils.safestring import mark_safe
 
 from pure_pagination.mixins import PaginationMixin
@@ -514,22 +515,22 @@ class CRUDView(PaginationMixin, ListView):
             if request.GET.get('o', '') == u'add':
                 if not self.get_allow_create() or \
                         not self.check_permission('add', None, request):
-                    raise Http404
+                    raise PermissionDenied
             elif request.GET.get('o', '') == u'edit' and request.GET.get('item'):
                 item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
                 if not self.get_allow_edit() or \
                         not self.item_editable(item) or \
                         not self.check_permission('edit', item, request):
-                    raise Http404
+                    raise PermissionDenied
             elif request.GET.get('o', '') == u'delete' and request.GET.get('item'):
                 item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
                 if not self.get_allow_delete() or \
                         not self.item_deletable(item) or \
                         not self.check_permission('delete', item, request):
-                    raise Http404
+                    raise PermissionDenied
             elif request.GET.get('o', '') == u'delete_multiple' and request.GET.get('items'):
                 if not self.get_allow_delete():
-                    raise Http404
+                    raise PermissionDenied
                 items = self.request.GET.get("items")
                 objects = self.get_queryset().filter(pk__in=items.split(","))
             else:
@@ -558,7 +559,7 @@ class CRUDView(PaginationMixin, ListView):
         # add a new item
         if not self.get_allow_create() or \
                 not self.check_permission('add', None, request):
-            raise Http404
+            raise PermissionDenied
         try:
             form = self.get_form(self.get_form_class(), data=self.request.POST)
             context_args = {}
@@ -602,7 +603,7 @@ class CRUDView(PaginationMixin, ListView):
             if not self.get_allow_edit() or \
                     not self.item_editable(item) or \
                     not self.check_permission('edit', item, request):
-                raise Http404
+                raise PermissionDenied
             form = self.get_form(self.get_form_class(), instance=item, data=self.request.POST,
                         files=request.FILES)
             context_args = {}
@@ -648,21 +649,23 @@ class CRUDView(PaginationMixin, ListView):
         if request.GET.get('items'):
             item_ids = request.GET.get('items')
             if not self.get_allow_delete():
-                raise Http404
+                raise PermissionDenied
             objects = self.get_queryset().filter(pk__in=item_ids.split(","))
             objects.delete()
             msg = _('Selected %s have been deleted') % self.get_model()._meta.verbose_name_plural.title()
         else:
             item = get_object_or_404(self.get_model(), pk=self.request.GET.get('item'))
             if not self.get_allow_delete() or \
+                    not self.item_deletable(item) or \
                     not self.check_permission('delete', item, request):
-                raise Http404
+                raise PermissionDenied
             # verify global delete view flag and individual item deletable flag
             # (if it was specified) before doing the actual deletion.
-            if not getattr(item, 'is_readonly', False) and self.item_deletable(item):
+            if not getattr(item, 'is_readonly', False) and \
+                    self.item_deletable(item):
                 item.delete()
                 msg = _('%s %s deleted') % (self.get_model()._meta.verbose_name.title(), item)
-        messages.info(self.request, msg)
+                messages.info(self.request, msg)
         return HttpResponseRedirect(self.get_opless_path())
 
     def post_action(self, request, *args, **kwargs):

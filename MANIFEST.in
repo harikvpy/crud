@@ -3,3 +3,4 @@ include LICENSE
 include README.rst
 recursive-include singleurlcrud/static *
 recursive-include singleurlcrud/templates *
+recursive-include singleurlcrud/templatetags *

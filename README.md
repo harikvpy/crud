@@ -6,6 +6,8 @@ means single URL to be registered in URL namespace. All CRUD operations are
 invoked with the same URL but with URL arguments to distinguish them. This allows
 less crowded and a simpler URL namespace.
 
+## PROJECT NO LONGER MAINTANED ##
+
 # Introduction
 
 Django comes with an excellent admin framework that provides a sophisticated 

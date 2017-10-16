@@ -7,6 +7,7 @@ invoked with the same URL but with URL arguments to distinguish them. This allow
 less crowded and a simpler URL namespace.
 
 ## PROJECT NO LONGER MAINTANED ##
+I don't maintain or use this project anymore. I have since moved to a new CRUD that leverages Django's class based views. This is more modular and reuses all the good bits from core Django code. You can find it [here](https://github.com/harikvpy/django-popupcrud.git).
 
 # Introduction
 

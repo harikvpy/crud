@@ -1,6 +1,10 @@
 History
 -------
 
+0.21 - 2017/10/16
+++++++++++++++++
+- Update for project status. Add link to ``django-popupcrud``.
+
 0.20 - 2016/1/30
 ++++++++++++++++
 - Add support for specifying list column titles through a dictionary specified
